@@ -13,7 +13,10 @@ Implemented based on LinkedIn Learning course: [Complete Guide to Apache Kafka f
   Different Partitions may be located on the same or different physical machines.
 - **Broker** - physical part of Kafka Cluster. 
   Only one Broker can be on the same physical machine. 
-  May contain different Partitions from different Topics.
+  Broker may contain different Partitions from different Topics.
+- **Durability** - Each Partition of each Topic is replicated in different Brokers. 
+  Event is sent to a Leader Partition. 
+  Event may be read from any replica of given Partition.
 
 ## Preparation
 
@@ -42,3 +45,15 @@ As we are using localhost, `replication-factor` can't be more than 1 (number of 
 Then check Topics, run `kafka-topics.sh --bootstrap-server localhost:9092 --list`
 
 Then describe Topic, run `kafka-topics.sh --bootstrap-server localhost:9092 --topic first_topic --describe`
+
+## Kafka CLI: Event Sending
+
+Having Topic named `first_topic` we can write Events to cmd. 
+To open input, run `kafka-console-producer.sh --bootstrap-server localhost:9092 --topic first_topic`
+
+Now we can send Event by typing text and clicking Enter. Each text line represents 1 Event (message).
+To exit input click combination `ctrl+c`.
+
+The same way, we can send Events with Key specified, run `kafka-console-producer.sh --bootstrap-server localhost:9092 --topic first_topic --property parse.key=true --property key.separator=:`
+
+So, message format is `key:value`, e.g. `city:Kyiv`
