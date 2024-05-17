@@ -94,7 +94,7 @@ For our case, next messages were entered:
 
 Having some Events sent to `first_topic` Topic we can read all of them and then start waiting for new messages.
 
-Run `kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic first_topic 
+run `kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic first_topic 
 --property print.timestamp=true 
 --property print.partition=true 
 --property print.offset=true 
@@ -153,7 +153,7 @@ We can close output by pressing `ctrl+c`.
 Let's imagine we need to get all messages starting from point where `city` was received first time.
 If we know corresponding `Partition` and `Offset`, we can do like this:
 
-Run `kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic first_topic
+run `kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic first_topic
 --property print.timestamp=true
 --property print.partition=true
 --property print.offset=true
@@ -176,9 +176,129 @@ By default, Events are read from the tail.
 So, if we aren't interested in history, we are free to not specify reading start point.
 We can just open output and wait for new Events:
 
-Run `kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic first_topic
+run `kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic first_topic
 --property print.timestamp=true
 --property print.partition=true
 --property print.offset=true
 --property print.key=true
 --property print.value=true`
+
+So, what about reading Events only once? Let's try `Consumer Groups`.
+When we specify Group, Kafka stores state of Event consuming by this Group.
+
+In first Ubuntu window let's read all Events for `first_microservice` Group:
+
+run `kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic first_topic 
+--group first_microservice 
+--property print.partition=true 
+--from-beginning`
+
+By this, we got all messages from `first_topic`. Output looks like this:
+
+| partition   | value         |
+|-------------|---------------|
+| Partition:1 | Yevhen        |
+| Partition:1 | Vasyia        |
+| Partition:1 | Petro         |
+| Partition:1 | Test          |
+| Partition:1 | K             |
+| Partition:1 | Kyiv          |
+| Partition:1 | Lviv          |
+| Partition:2 | Hello world 1 |
+| Partition:2 | Yevhen 2      |
+| Partition:2 | See ya 3      |
+| Partition:1 | NewYevhen     |
+| Partition:1 | NewKyiv       |
+| Partition:2 | Hello world 2 |
+| Partition:2 | See ya!       |
+| Partition:2 | Null check    |
+
+Now, we're going to add one more Consumer within the same Group.
+
+In second Ubuntu window the same way try to read:
+
+run `kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic first_topic 
+--group first_microservice 
+--property print.partition=true 
+--from-beginning`
+
+As a result, we got no message, as they were already processed by first Consumer.
+
+Now, we're going to add one more Consumer with the _different_ Group.
+
+In third Ubuntu window try to read: 
+
+run `kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic first_topic 
+--group second_microservice
+--property print.partition=true
+--from-beginning`
+
+Again, we got all messages from `first_topic` as these messages were not consumed by `second_microservice`. Output looks like this:
+
+| partition   | value         |
+|-------------|---------------|
+| Partition:1 | Yevhen        |
+| Partition:1 | Vasyia        |
+| Partition:1 | Petro         |
+| Partition:1 | Test          |
+| Partition:1 | K             |
+| Partition:1 | Kyiv          |
+| Partition:1 | Lviv          |
+| Partition:2 | Hello world 1 |
+| Partition:2 | Yevhen 2      |
+| Partition:2 | See ya 3      |
+| Partition:1 | NewYevhen     |
+| Partition:1 | NewKyiv       |
+| Partition:2 | Hello world 2 |
+| Partition:2 | See ya!       |
+| Partition:2 | Null check    |
+
+Now let's try to send Events on the fly, so we can see How messages are distributed across different Consumers:
+
+In forth Ubuntu window we're going to send Events:
+
+run `kafka-console-producer.sh --bootstrap-server localhost:9092 --topic first_topic 
+--producer-property partitioner.class=org.apache.kafka.clients.producer.RoundRobinPartitioner`
+
+Let's send next messages one by one:
+
+| value |
+|-------|
+| a     |
+| b     |
+| c     |
+| d     |
+| e     |
+| f     |
+
+For first Consumer within `first_microservice` Group, I got next Events:
+
+| Partition   | value |
+|-------------|-------|
+| Partition:1 | a     |
+| Partition:0 | b     |
+| Partition:1 | d     |
+| Partition:0 | e     |
+
+For second Consumer within `first_microservice` Group, I got next Events:
+
+| Partition   | value |
+|-------------|-------|
+| Partition:2 | c     |
+| Partition:2 | f     |
+
+For Consumer within `second_microservice` Group, I got next Events:
+
+| Partition   | value |
+|-------------|-------|
+| Partition:1 | a     |
+| Partition:0 | b     |
+| Partition:2 | c     |
+| Partition:1 | d     |
+| Partition:0 | e     |
+| Partition:2 | f     |
+
+So, for `first_microservice` Group messages were distributed across 2 Consumers.
+Moreover, we see that first Consumer received messages from 2 Partitions,
+while second Consumer just from one Partition.
+For `second_microservice` Group we got all same Events.
