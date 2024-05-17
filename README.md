@@ -53,11 +53,11 @@ Then describe Topic, run `kafka-topics.sh --bootstrap-server localhost:9092 --to
 
 Output looks like this:
 
-| Topic              | TopicId                         | PartitionCount    | ReplicationFactor    | Configs  |
+|                    |                                 |                   |                      |          |
 |--------------------|---------------------------------|-------------------|----------------------|----------|
 | Topic: first_topic | TopicId: BfQ0D9GXRWufAz0zyzPrhQ | PartitionCount: 3 | ReplicationFactor: 1 | Configs: |
 
-| Topic              | Partition    | Leader    | Replicas    | Isr    |
+|                    |              |           |             |        |
 |--------------------|--------------|-----------|-------------|--------|
 | Topic: first_topic | Partition: 0 | Leader: 0 | Replicas: 0 | Isr: 0 |
 | Topic: first_topic | Partition: 1 | Leader: 0 | Replicas: 0 | Isr: 0 |
@@ -91,6 +91,8 @@ For our case, next messages were entered:
 | city | Lviv          |
 
 ## Kafka CLI: Event Receiving
+
+#### Consumer
 
 Having some Events sent to `first_topic` Topic we can read all of them and then start waiting for new messages.
 
@@ -182,6 +184,8 @@ run `kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic first_t
 --property print.offset=true
 --property print.key=true
 --property print.value=true`
+
+#### Consumer Group
 
 So, what about reading Events only once? Let's try `Consumer Groups`.
 When we specify Group, Kafka stores state of Event consuming by this Group.
