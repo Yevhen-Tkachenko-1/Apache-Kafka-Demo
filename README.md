@@ -14,11 +14,13 @@ Implemented based on LinkedIn Learning course: [Complete Guide to Apache Kafka f
 - **Kafka Broker** - physical part of Kafka Cluster. 
   Only one Broker can be on the same physical machine. 
   Broker may contain different Partitions from different Topics.
+- **Throughput** - thanks to Topic Partitioning,
+  we can have several Clients that use the same Topic, but consume their specific data simultaneously.
 - **Scalability** - we can increase performance horizontally by adding new Kafka Brokers 
   and rebalancing Partitions.  
 - **Durability** - each Partition of each Topic is replicated in different Brokers.
-  In case one Broker is down, we can continue work with replicas in other Brokers.
-  Event is sent to a Leader Partition replica.
+  In case one Broker is down, we can continue work with other replicas that are in live Brokers.
+  Event is sent to a Leader replica.
   Event may be read from any replica of given Partition.
 
 ## Software Preparation (Windows OS)
