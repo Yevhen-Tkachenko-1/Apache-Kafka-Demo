@@ -3,30 +3,33 @@ Learn and play with Apache Kafka
 
 Implemented based on LinkedIn Learning course: [Complete Guide to Apache Kafka for Beginners](https://www.linkedin.com/learning/complete-guide-to-apache-kafka-for-beginners)
 
-## Theory
+## Short Theory
 
 - **Kafka Cluster** - entire service within microservice app.
 - **Topic** - logical part of Kafka Cluster for Event processing.
   Event is some sort of data, e.g. Temperature changing over the time collected by City sensors. 
 - **Partition** - physical and logical part of Topic. 
-  When Events come to Topic they are distributed across several Partitions. 
+  When Events come to Topic they are distributed across several Partitions.
   Different Partitions may be located on the same or different physical machines.
-- **Broker** - physical part of Kafka Cluster. 
+- **Kafka Broker** - physical part of Kafka Cluster. 
   Only one Broker can be on the same physical machine. 
   Broker may contain different Partitions from different Topics.
-- **Durability** - Each Partition of each Topic is replicated in different Brokers. 
-  Event is sent to a Leader Partition. 
+- **Scalability** - we can increase performance horizontally by adding new Kafka Brokers 
+  and rebalancing Partitions.  
+- **Durability** - each Partition of each Topic is replicated in different Brokers.
+  In case one Broker is down, we can continue work with replicas in other Brokers.
+  Event is sent to a Leader Partition replica.
   Event may be read from any replica of given Partition.
 
-## Preparation
+## Software Preparation (Windows OS)
 
-First, we have to install Kafka and ZooKeeper servers on our machine.
+First, we have to set up WSL and install Kafka and ZooKeeper servers on our machine.
 
 Follow this instruction: [How to Install Apache Kafka on Windows?](https://www.conduktor.io/kafka/how-to-install-apache-kafka-on-windows/) 
 
-Used `kafka_2.13-3.7.0`
+Used version `kafka_2.13-3.7.0`
 
-## Start services
+## Start Kafka
 
 Start local services for Zookeeper and Kafka:
 
@@ -45,6 +48,18 @@ As we are using localhost, `replication-factor` can't be more than 1 (number of 
 Then check Topics, run `kafka-topics.sh --bootstrap-server localhost:9092 --list`
 
 Then describe Topic, run `kafka-topics.sh --bootstrap-server localhost:9092 --topic first_topic --describe`
+
+Output looks like this:
+
+| Topic              | TopicId                         | PartitionCount    | ReplicationFactor    | Configs  |
+|--------------------|---------------------------------|-------------------|----------------------|----------|
+| Topic: first_topic | TopicId: BfQ0D9GXRWufAz0zyzPrhQ | PartitionCount: 3 | ReplicationFactor: 1 | Configs: |
+
+| Topic              | Partition    | Leader    | Replicas    | Isr    |
+|--------------------|--------------|-----------|-------------|--------|
+| Topic: first_topic | Partition: 0 | Leader: 0 | Replicas: 0 | Isr: 0 |
+| Topic: first_topic | Partition: 1 | Leader: 0 | Replicas: 0 | Isr: 0 |
+| Topic: first_topic | Partition: 2 | Leader: 0 | Replicas: 0 | Isr: 0 |
 
 ## Kafka CLI: Event Sending
 
