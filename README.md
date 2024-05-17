@@ -57,3 +57,111 @@ To exit input click combination `ctrl+c`.
 The same way, we can send Events with Key specified, run `kafka-console-producer.sh --bootstrap-server localhost:9092 --topic first_topic --property parse.key=true --property key.separator=:`
 
 So, message format is `key:value`, e.g. `city:Kyiv`
+
+For our case, next messages were entered:
+
+| key  | value         |
+|------|---------------|
+|      | Hello world 1 |
+|      | Yevhen 2      |
+|      | See ya 3      |
+| name | Yevhen        |
+| name | Vasyia        |
+| name | Petro         |
+| name | Test          |
+| city | K             |
+| city | Kyiv          |
+| city | Lviv          |
+
+## Kafka CLI: Event Receiving
+
+Having some Events sent to `first_topic` Topic we can read all of them and then start waiting for new messages.
+
+Run `kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic first_topic 
+--property print.timestamp=true 
+--property print.partition=true 
+--property print.offset=true 
+--property print.key=true 
+--property print.value=true 
+--from-beginning`
+
+Output looks like this:
+
+| timestamp                | partition   | offset   | key  | value         |
+|--------------------------|-------------|----------|------|---------------|
+| CreateTime:1715873430011 | Partition:1 | Offset:0 | name | Yevhen        |
+| CreateTime:1715873436869 | Partition:1 | Offset:1 | name | Vasyia        |
+| CreateTime:1715873444213 | Partition:1 | Offset:2 | name | Petro         |
+| CreateTime:1715873452693 | Partition:1 | Offset:3 | name | Test          |
+| CreateTime:1715873458901 | Partition:1 | Offset:4 | city | K             |
+| CreateTime:1715873466165 | Partition:1 | Offset:5 | city | Kyiv          |
+| CreateTime:1715873470981 | Partition:1 | Offset:6 | city | Lviv          |
+| CreateTime:1715872525844 | Partition:2 | Offset:0 | null | Hello world 1 |
+| CreateTime:1715872528469 | Partition:2 | Offset:1 | null | Yevhen 2      |
+| CreateTime:1715872536453 | Partition:2 | Offset:2 | null | See ya 3      |
+
+In new Ubuntu window we can send new Events one by one, and these messages will appear in output almost immediately.
+
+Let's say now we've entered 
+
+| key  | value         |
+|------|---------------|
+| name | NewYevhen     |
+| text | Hello world 2 |
+| text | See ya!       |
+| null | Null check    |
+
+So, total output is next:
+
+| timestamp                | partition   | offset   | key  | value         |
+|--------------------------|-------------|----------|------|---------------|
+| CreateTime:1715873430011 | Partition:1 | Offset:0 | name | Yevhen        |
+| CreateTime:1715873436869 | Partition:1 | Offset:1 | name | Vasyia        |
+| CreateTime:1715873444213 | Partition:1 | Offset:2 | name | Petro         |
+| CreateTime:1715873452693 | Partition:1 | Offset:3 | name | Test          |
+| CreateTime:1715873458901 | Partition:1 | Offset:4 | city | K             |
+| CreateTime:1715873466165 | Partition:1 | Offset:5 | city | Kyiv          |
+| CreateTime:1715873470981 | Partition:1 | Offset:6 | city | Lviv          |
+| CreateTime:1715872525844 | Partition:2 | Offset:0 | null | Hello world 1 |
+| CreateTime:1715872528469 | Partition:2 | Offset:1 | null | Yevhen 2      |
+| CreateTime:1715872536453 | Partition:2 | Offset:2 | null | See ya 3      |
+| CreateTime:1715943659435 | Partition:1 | Offset:7 | name | NewYevhen     |
+| CreateTime:1715943684511 | Partition:1 | Offset:8 | city | NewKyiv       |
+| CreateTime:1715943774864 | Partition:2 | Offset:3 | text | Hello world 2 |
+| CreateTime:1715943807390 | Partition:2 | Offset:4 | text | See ya!       |
+| CreateTime:1715943820942 | Partition:2 | Offset:5 | null | Null check    |
+
+We can close output by pressing `ctrl+c`.
+
+Let's imagine we need to get all messages starting from point where `city` was received first time.
+If we know corresponding `Partition` and `Offset`, we can do like this:
+
+Run `kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic first_topic
+--property print.timestamp=true
+--property print.partition=true
+--property print.offset=true
+--property print.key=true
+--property print.value=true
+--partition 1
+--offset 4`
+
+Output looks like this:
+
+| timestamp                | partition   | offset   | key  | value         |
+|--------------------------|-------------|----------|------|---------------|
+| CreateTime:1715873458901 | Partition:1 | Offset:4 | city | K             |
+| CreateTime:1715873466165 | Partition:1 | Offset:5 | city | Kyiv          |
+| CreateTime:1715873470981 | Partition:1 | Offset:6 | city | Lviv          |
+| CreateTime:1715943659435 | Partition:1 | Offset:7 | name | NewYevhen     |
+| CreateTime:1715943684511 | Partition:1 | Offset:8 | city | NewKyiv       |
+
+By default, Events are read from the tail. 
+So, if we aren't interested in history, we are free to not specify reading start point.
+We can just open output and wait for new Events:
+
+Run `kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic first_topic
+--property print.timestamp=true
+--property print.partition=true
+--property print.offset=true
+--property print.key=true
+--property print.value=true`
