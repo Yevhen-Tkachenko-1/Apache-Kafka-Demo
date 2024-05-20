@@ -219,7 +219,7 @@ By this, we got all messages from `first_topic`. Output looks like this:
 
 Now, we're going to add one more Consumer within the same Group.
 
-In second Ubuntu window the same way try to read:
+In second Ubuntu window try to read the same way:
 
 run `kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic first_topic 
 --group first_microservice 
@@ -306,3 +306,105 @@ So, for `first_microservice` Group messages were distributed across 2 Consumers.
 Moreover, we see that first Consumer received messages from 2 Partitions,
 while second Consumer just from one Partition.
 For `second_microservice` Group we got all same Events.
+
+#### Consumer Offset
+
+Now let's check specific properties for Consumer Group status.
+
+In new Ubuntu window we're going to consume all Events with new Group:
+
+run `kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic first_topic
+--group third_microservice
+--property print.partition=true
+--from-beginning`
+
+Then check offset for this Group:
+
+run `kafka-consumer-groups.sh --bootstrap-server localhost:9092 --describe --group third_microservice`
+
+Output looks like this:
+
+| GROUP              | TOPIC       | PARTITION | CURRENT-OFFSET | LOG-END-OFFSET | LAG | CONSUMER-ID                                           | HOST       | CLIENT-ID        |
+|--------------------|-------------|-----------|----------------|----------------|-----|-------------------------------------------------------|------------|------------------|
+| third_microservice | first_topic | 0         | 4              | 4              | 0   | console-consumer-61feed63-f17a-4fb5-9b34-4b55fadac1b9 | /127.0.0.1 | console-consumer |
+| third_microservice | first_topic | 1         | 17             | 17             | 0   | console-consumer-61feed63-f17a-4fb5-9b34-4b55fadac1b9 | /127.0.0.1 | console-consumer |
+| third_microservice | first_topic | 2         | 8              | 8              | 0   | console-consumer-61feed63-f17a-4fb5-9b34-4b55fadac1b9 | /127.0.0.1 | console-consumer |
+
+which means we've consumed all available Events.
+
+Now in sending Ubuntu window we can produce more messages like this:
+  
+| value |
+|-------|
+| i     |
+| j     |
+| k     | 
+
+Let's check offset again:
+
+run `kafka-consumer-groups.sh --bootstrap-server localhost:9092 --describe --group third_microservice`
+
+Output looks like this:
+
+| GROUP              | TOPIC       | PARTITION | CURRENT-OFFSET | LOG-END-OFFSET | LAG | CONSUMER-ID                                           | HOST       | CLIENT-ID        |
+|--------------------|-------------|-----------|----------------|----------------|-----|-------------------------------------------------------|------------|------------------|
+| third_microservice | first_topic | 0         | 5              | 5              | 0   | console-consumer-61feed63-f17a-4fb5-9b34-4b55fadac1b9 | /127.0.0.1 | console-consumer |
+| third_microservice | first_topic | 1         | 18             | 18             | 0   | console-consumer-61feed63-f17a-4fb5-9b34-4b55fadac1b9 | /127.0.0.1 | console-consumer |
+| third_microservice | first_topic | 2         | 9              | 9              | 0   | console-consumer-61feed63-f17a-4fb5-9b34-4b55fadac1b9 | /127.0.0.1 | console-consumer |
+
+as we can see, offsets of each Partition is increased, but still we are in sync.
+
+Now let's stop consume, and exit reading output. In sending Ubuntu window produce more messages like this:
+
+| value |
+|-------|
+| l     |
+| m     |
+| n     | 
+| o     | 
+| p     | 
+| q     | 
+| r     | 
+
+Let's compare offset now:
+
+run `kafka-consumer-groups.sh --bootstrap-server localhost:9092 --describe --group third_microservice`
+
+Output looks like this:
+
+| GROUP              | TOPIC       | PARTITION | CURRENT-OFFSET | LOG-END-OFFSET | LAG | CONSUMER-ID                                           | HOST       | CLIENT-ID        |
+|--------------------|-------------|-----------|----------------|----------------|-----|-------------------------------------------------------|------------|------------------|
+| third_microservice | first_topic | 0         | 5              | 7              | 2   | console-consumer-61feed63-f17a-4fb5-9b34-4b55fadac1b9 | /127.0.0.1 | console-consumer |
+| third_microservice | first_topic | 1         | 18             | 21             | 3   | console-consumer-61feed63-f17a-4fb5-9b34-4b55fadac1b9 | /127.0.0.1 | console-consumer |
+| third_microservice | first_topic | 2         | 9              | 11             | 2   | console-consumer-61feed63-f17a-4fb5-9b34-4b55fadac1b9 | /127.0.0.1 | console-consumer |
+
+which means we have some Events to consume, e.g. there are 2 new Messages in Partition 0 and so on.
+
+Additionally, we can check who else consume in our application:
+
+run `kafka-consumer-groups.sh --bootstrap-server localhost:9092 --list`
+
+Output shows all Groups we've specified
+
+| Consumer Group      |
+|---------------------|
+| second_microservice |
+| third_microservice  |
+| first_microservice  |
+
+Now let's check how "anonymous" consumer looks like. Open new Ubuntu window for reading:
+
+run `kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic first_topic`
+
+and check all Groups again:
+
+run `kafka-consumer-groups.sh --bootstrap-server localhost:9092 --list`
+
+Now we see one more _active_ consumer:
+
+| Consumer Group         |
+|------------------------|
+| console-consumer-58267 |
+| second_microservice    |
+| third_microservice     |
+| first_microservice     |
