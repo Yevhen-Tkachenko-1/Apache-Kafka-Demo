@@ -408,3 +408,21 @@ Now we see one more _active_ consumer:
 | second_microservice    |
 | third_microservice     |
 | first_microservice     |
+
+We can update offsets not only by consuming Events, but also directly using commands:
+
+run `kafka-consumer-groups.sh --bootstrap-server localhost:9092 --group third_microservice
+--topic first_topic
+--reset-offsets 
+--to-earliest
+--execute`
+
+Output looks like this:
+
+| GROUP              | TOPIC       | PARTITION | NEW-OFFSET |
+|--------------------|-------------|-----------|------------|
+| third_microservice | first_topic | 0         | 0          |
+| third_microservice | first_topic | 1         | 0          |
+| third_microservice | first_topic | 2         | 0          |
+
+By that we skipped all Events in queue in order to consume the newest ones.
