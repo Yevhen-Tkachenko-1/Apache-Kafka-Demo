@@ -43,6 +43,14 @@ Follow this instruction: [How to Install Apache Kafka on Windows?](https://www.c
 
 Used version `kafka_2.13-3.7.0`
 
+Additionally, we have to set up `listeners` value in `~/kafka_2.13-3.7.0/config/server.properties` file:
+
+run `nano ~/kafka_2.13-3.7.0/config/server.properties`
+
+find, uncomment and update `listeners` value to `PLAINTEXT://[::1]:9092`
+
+We will use it as `--bootstrap-server` for Kafka CLI and `bootstrap.servers` for Java SDK.
+
 ## Start Kafka
 
 Start local services for Zookeeper and Kafka:
@@ -55,13 +63,13 @@ In second Ubuntu window run `kafka-server-start.sh ~/kafka_2.13-3.7.0/config/ser
 
 Having Zookeeper and Kafka running, we can create new Topic.
 
-In third Ubuntu window run `kafka-topics.sh --bootstrap-server localhost:9092 --topic first_topic --create --partitions 3 --replication-factor 1` 
+In third Ubuntu window run `kafka-topics.sh --bootstrap-server [::1]:9092 --topic first_topic --create --partitions 3 --replication-factor 1` 
 
 As we are using localhost, `replication-factor` can't be more than 1 (number of server machines). 
 
-Then check Topics, run `kafka-topics.sh --bootstrap-server localhost:9092 --list`
+Then check Topics, run `kafka-topics.sh --bootstrap-server [::1]:9092 --list`
 
-Then describe Topic, run `kafka-topics.sh --bootstrap-server localhost:9092 --topic first_topic --describe`
+Then describe Topic, run `kafka-topics.sh --bootstrap-server [::1]:9092 --topic first_topic --describe`
 
 Output looks like this:
 
@@ -78,12 +86,12 @@ Output looks like this:
 ## Kafka CLI: Event Sending
 
 Having Topic named `first_topic` we can write Events to cmd. 
-To open input, run `kafka-console-producer.sh --bootstrap-server localhost:9092 --topic first_topic`
+To open input, run `kafka-console-producer.sh --bootstrap-server [::1]:9092 --topic first_topic`
 
 Now we can send Event by typing text and clicking Enter. Each text line represents 1 Event (message).
 To exit input click combination `ctrl+c`.
 
-The same way, we can send Events with Key specified, run `kafka-console-producer.sh --bootstrap-server localhost:9092 --topic first_topic --property parse.key=true --property key.separator=:`
+The same way, we can send Events with Key specified, run `kafka-console-producer.sh --bootstrap-server [::1]:9092 --topic first_topic --property parse.key=true --property key.separator=:`
 
 So, message format is `key:value`, e.g. `city:Kyiv`
 
@@ -108,7 +116,7 @@ For our case, next messages were entered:
 
 Having some Events sent to `first_topic` Topic we can read all of them and then start waiting for new messages.
 
-run `kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic first_topic 
+run `kafka-console-consumer.sh --bootstrap-server [::1]:9092 --topic first_topic 
 --property print.timestamp=true 
 --property print.partition=true 
 --property print.offset=true 
@@ -167,7 +175,7 @@ We can close output by pressing `ctrl+c`.
 Let's imagine we need to get all messages starting from point where `city` was received first time.
 If we know corresponding `Partition` and `Offset`, we can do like this:
 
-run `kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic first_topic
+run `kafka-console-consumer.sh --bootstrap-server [::1]:9092 --topic first_topic
 --property print.timestamp=true
 --property print.partition=true
 --property print.offset=true
@@ -190,7 +198,7 @@ By default, Events are read from the tail.
 So, if we aren't interested in history, we are free to not specify reading start point.
 We can just open output and wait for new Events:
 
-run `kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic first_topic
+run `kafka-console-consumer.sh --bootstrap-server [::1]:9092 --topic first_topic
 --property print.timestamp=true
 --property print.partition=true
 --property print.offset=true
@@ -204,7 +212,7 @@ When we specify Group, Kafka stores state of Event consuming by this Group.
 
 In first Ubuntu window let's read all Events for `first_microservice` Group:
 
-run `kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic first_topic 
+run `kafka-console-consumer.sh --bootstrap-server [::1]:9092 --topic first_topic 
 --group first_microservice 
 --property print.partition=true 
 --from-beginning`
@@ -233,7 +241,7 @@ Now, we're going to add one more Consumer within the same Group.
 
 In second Ubuntu window try to read the same way:
 
-run `kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic first_topic 
+run `kafka-console-consumer.sh --bootstrap-server [::1]:9092 --topic first_topic 
 --group first_microservice 
 --property print.partition=true 
 --from-beginning`
@@ -244,7 +252,7 @@ Now, we're going to add one more Consumer with the _different_ Group.
 
 In third Ubuntu window try to read: 
 
-run `kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic first_topic 
+run `kafka-console-consumer.sh --bootstrap-server [::1]:9092 --topic first_topic 
 --group second_microservice
 --property print.partition=true
 --from-beginning`
@@ -273,7 +281,7 @@ Now let's try to send Events on the fly, so we can see How messages are distribu
 
 In forth Ubuntu window we're going to send Events:
 
-run `kafka-console-producer.sh --bootstrap-server localhost:9092 --topic first_topic 
+run `kafka-console-producer.sh --bootstrap-server [::1]:9092 --topic first_topic 
 --producer-property partitioner.class=org.apache.kafka.clients.producer.RoundRobinPartitioner`
 
 Let's send next messages one by one:
@@ -325,14 +333,14 @@ Now let's check specific properties for Consumer Group status.
 
 In new Ubuntu window we're going to consume all Events with new Group:
 
-run `kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic first_topic
+run `kafka-console-consumer.sh --bootstrap-server [::1]:9092 --topic first_topic
 --group third_microservice
 --property print.partition=true
 --from-beginning`
 
 Then check offset for this Group:
 
-run `kafka-consumer-groups.sh --bootstrap-server localhost:9092 --describe --group third_microservice`
+run `kafka-consumer-groups.sh --bootstrap-server [::1]:9092 --describe --group third_microservice`
 
 Output looks like this:
 
@@ -354,7 +362,7 @@ Now in sending Ubuntu window we can produce more messages like this:
 
 Let's check offset again:
 
-run `kafka-consumer-groups.sh --bootstrap-server localhost:9092 --describe --group third_microservice`
+run `kafka-consumer-groups.sh --bootstrap-server [::1]:9092 --describe --group third_microservice`
 
 Output looks like this:
 
@@ -380,7 +388,7 @@ Now let's stop consume, and exit reading output. In sending Ubuntu window produc
 
 Let's compare offset now:
 
-run `kafka-consumer-groups.sh --bootstrap-server localhost:9092 --describe --group third_microservice`
+run `kafka-consumer-groups.sh --bootstrap-server [::1]:9092 --describe --group third_microservice`
 
 Output looks like this:
 
@@ -394,7 +402,7 @@ which means we have some Events to consume, e.g. there are 2 new Messages in Par
 
 Additionally, we can check who else consume in our application:
 
-run `kafka-consumer-groups.sh --bootstrap-server localhost:9092 --list`
+run `kafka-consumer-groups.sh --bootstrap-server [::1]:9092 --list`
 
 Output shows all Groups we've specified
 
@@ -406,11 +414,11 @@ Output shows all Groups we've specified
 
 Now let's check how "anonymous" consumer looks like. Open new Ubuntu window for reading:
 
-run `kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic first_topic`
+run `kafka-console-consumer.sh --bootstrap-server [::1]:9092 --topic first_topic`
 
 and check all Groups again:
 
-run `kafka-consumer-groups.sh --bootstrap-server localhost:9092 --list`
+run `kafka-consumer-groups.sh --bootstrap-server [::1]:9092 --list`
 
 Now we see one more _active_ consumer:
 
@@ -423,7 +431,7 @@ Now we see one more _active_ consumer:
 
 We can update offsets not only by consuming Events, but also directly using commands:
 
-run `kafka-consumer-groups.sh --bootstrap-server localhost:9092 --group third_microservice
+run `kafka-consumer-groups.sh --bootstrap-server [::1]:9092 --group third_microservice
 --topic first_topic
 --reset-offsets 
 --to-earliest
