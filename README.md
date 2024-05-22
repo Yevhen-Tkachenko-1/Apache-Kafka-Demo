@@ -3,6 +3,18 @@ Learn and play with Apache Kafka
 
 Implemented based on LinkedIn Learning course: [Complete Guide to Apache Kafka for Beginners](https://www.linkedin.com/learning/complete-guide-to-apache-kafka-for-beginners)
 
+## Tech Stack
+
+- Apache Kafka
+- Apache ZooKeeper
+- Apache Kafka CLI
+- Apache Kafka SDK
+- Java 17
+- Gradle
+- Windows 10
+- Windows Subsystem for Linux (WSL)
+- IntelliJ IDEA (Community edition)
+
 ## Short Theory
 
 - **Kafka Cluster** - entire service within microservice app.
