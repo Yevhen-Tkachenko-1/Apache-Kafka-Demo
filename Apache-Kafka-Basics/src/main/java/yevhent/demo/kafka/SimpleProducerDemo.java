@@ -8,9 +8,9 @@ import org.slf4j.LoggerFactory;
 
 import java.util.Properties;
 
-public class ProducerDemo {
+public class SimpleProducerDemo {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(ProducerDemo.class.getName());
+    private static final Logger LOGGER = LoggerFactory.getLogger(SimpleProducerDemo.class.getName());
 
     public static void main(String[] args) {
         System.out.println("Hello world!");
@@ -23,7 +23,14 @@ public class ProducerDemo {
 
         KafkaProducer<String, String> producer = new KafkaProducer<>(properties);
         ProducerRecord<String, String> record = new ProducerRecord<>("first_topic", "Message from Java Producer");
-        producer.send(record);
+        producer.send(record, (metadata, exception)-> {
+            if(exception == null){
+                LOGGER.info("Metadata: topic = {}, partition = {}, offset = {}, timestamp = {}",
+                        metadata.topic(), metadata.partition(), metadata.offset(), metadata.timestamp());
+            } else {
+                LOGGER.error("Error while producing", exception);
+            }
+        });
         producer.close();
     }
 }
