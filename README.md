@@ -446,3 +446,27 @@ Output looks like this:
 | third_microservice | first_topic | 2         | 0          |
 
 By that we skipped all Events in queue in order to consume the newest ones.
+
+## Kafka Java SDK: Event Sending
+
+Before running Java Producers/Consumers don't forget to have Kafka servers running on local machine as described in previous section.
+
+1. The simplest message sending is shown [here](Apache-Kafka-Basics/src/main/java/yevhent/demo/kafka/producer/SimpleEventProducerDemo.java)
+   <br> Output looks like this:
+   
+   ![](resources/1.PNG)
+
+2. Now let's try to simulate Event stream. Implementation is [here](Apache-Kafka-Basics/src/main/java/yevhent/demo/kafka/producer/SimpleStreamProducerDemo.java)
+   <br> When we send messages one by one they go to the same Partition. 
+   <br> Output looks like this:
+   ![](resources/2.PNG)
+   <br> In our case all messages went to `Partition 2`
+
+3. Time to see When Events are distributed into different Partitions.
+   Implementation is [here](Apache-Kafka-Basics/src/main/java/yevhent/demo/kafka/producer/ParallelStreamProducerDemo.java)
+   <br> One way is to decrease `batch.size` value. Default is `16384` and we have set `400`.
+   <br> Output looks like this:
+
+   ![](resources/3.PNG)
+
+   Due to limited `batch.size` messages are distributed across all 3 `Partitions`.
