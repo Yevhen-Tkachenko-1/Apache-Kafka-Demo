@@ -463,10 +463,66 @@ Before running Java Producers/Consumers don't forget to have Kafka servers runni
    <br> In our case all messages went to `Partition 2`
 
 3. Time to see When Events are distributed into different Partitions.
-   Implementation is [here](Apache-Kafka-Basics/src/main/java/yevhent/demo/kafka/producer/ParallelStreamProducerDemo.java)
+   Implementation is [here](Apache-Kafka-Basics/src/main/java/yevhent/demo/kafka/producer/DistributedStreamProducerDemo.java)
    <br> One way is to decrease `batch.size` value. Default is `16384` and we have set `400`.
    <br> Output looks like this:
 
    ![](resources/3.PNG)
 
    Due to limited `batch.size` messages are distributed across all 3 `Partitions`.
+
+4. Up to this point we haven't used Keys yet. 
+   Let's see how Events are distributed across Partitions when Key is specified.
+   Implementation is [here](Apache-Kafka-Basics/src/main/java/yevhent/demo/kafka/producer/KeyedStreamProducerDemo.java)
+   <br>From business perspective, there we have 4 Keys which describe property of number from `-10` to `10`: 
+   - `negative_even`
+   - `positive_even`
+   - `negative_odd`
+   - `positive_odd`
+   
+   and no Key (`null`) in case of round numbers.
+   
+   Partition by Partition output looks like this:
+   
+   ![](resources/4.1.PNG)
+
+   On the first picture we see that only values with Keys
+   `positive_odd` and `null` went to `Partition 0`. 
+   And it's true for both iterations `[1]` and `[2]`. 
+
+   ![](resources/4.2.PNG)
+
+   On the second picture we see that only values with Keys
+   `negative_odd` and `positive_even` went to `Partition 1`.
+   And it's true for both iterations `[1]` and `[2]`. 
+
+   ![](resources/4.3.PNG)
+
+   On the third picture we see that only values with Keys
+   `negative_even` went to `Partition 2`.
+   And it's true for both iterations `[1]` and `[2]`. 
+
+   Summarizing, messages with the same Keys go to the same Partition, 
+   and for that Key order is kept within Partition.
+    
+5. Let's proof that Events are not distributed if we have only one Key.
+   We can reuse previous [implementation](Apache-Kafka-Basics/src/main/java/yevhent/demo/kafka/producer/DistributedStreamProducerDemo.java)
+   but with Key specified. 
+   So, new implementation looks like [this](Apache-Kafka-Basics/src/main/java/yevhent/demo/kafka/producer/NotDistributedStreamProducerDemo.java)
+   
+   ![](resources/5.PNG)
+   
+   Now, all 100 messages went to one Partition, in my case it's `Partition 2` 
+
+6. Let's see if there is difference when we specify Key as `null` or as `"null"` 
+   or don't specify at all (don't pass additional parameter to Record constructor).
+   For that, I'm going to modify previous demo, so new one looks like [this](Apache-Kafka-Basics/src/main/java/yevhent/demo/kafka/producer/NullKeyStreamProducerDemo.java)
+
+   ![](resources/6.PNG)
+
+   - All values with Key `null` (as null reference) were distributed across all 3 Partitions.
+   - All values with Key not specified were distributed across all 3 Partitions.
+   - All values with Key `"null"` (as 'null' string) went to Partition 2.
+  
+   So, we can use Key `null` the same way as when no Key specified, and such Events are not belong to any Partition.
+   Whereas Key `"null"` works as a regular Key, e.g. `"123"` .
