@@ -25,7 +25,7 @@ public class DistributedStreamProducerDemo {
         KafkaProducer<String, String> producer = new KafkaProducer<>(properties);
 
         for (int i = 0; i < 100; i++) {
-            producer.send(SimpleEventProducerDemo.getMessage(0, i), SimpleEventProducerDemo::handle);
+            SimpleEventProducerDemo.send(producer, "Message from Java Producer " + i);
         }
         producer.close();
     }
