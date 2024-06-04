@@ -13,7 +13,7 @@ Implemented based on LinkedIn Learning course: [Complete Guide to Apache Kafka f
    * [Consumer](#consumer)
    * [Consumer Group](#consumer-group)
    * [Consumer Offset](#consumer-offset)
-* [Kafka Java SDK: Event Sending](#kafka-java-sdk-event-sending)
+* [Java SDK: Event Sending](#java-sdk-event-sending)
 
 ## Tech Stack
 
@@ -459,7 +459,7 @@ Output looks like this:
 
 By that we skipped all Events in queue in order to consume the newest ones.
 
-## Kafka Java SDK: Event Sending
+## Java SDK: Event Sending
 
 Before running Java Producers/Consumers don't forget to have Kafka servers running on local machine as described in previous section.
 
@@ -537,4 +537,46 @@ Before running Java Producers/Consumers don't forget to have Kafka servers runni
    - All values with Key `"null"` (as 'null' string) went to Partition 2.
   
    So, we can use Key `null` the same way as when no Key specified, and such Events are not belong to any Partition.
-   Whereas Key `"null"` works as a regular Key, e.g. `"123"` .
+   Whereas Key `"null"` works as a regular Key, e.g. `"123"`.
+
+## Java SDK: Event Receiving
+
+In this section we are going to set up Java Consumer, subscribe to a Topic(s) and pull Events.
+
+1. There is [example](Apache-Kafka-Basics/src/main/java/yevhent/demo/kafka/consumer/EarliestConsumerDemo.java)
+   of pulling `earliest` Events meaning read from beginning 
+   (the same as `--from-beginning` parameter in CLI request to `kafka-console-consumer.sh`)
+
+   There we have new Consumer GroupID and read previously sent Events, so output starts like this:
+
+   ![](resources/7.1.PNG)
+
+   We can see that Kafka does setting for our Group offsets.
+
+   Then we see messages from 3 pulls:
+
+   ![](resources/7.2.PNG)
+
+    As our pulling is limited by 10 messages in 1 pull, we consumed only from `Partition 0` so far.
+
+   Why offset value starts from `7`? 
+   Cause for new Group it should be 0, isn't it?
+   Answer is that Events before offset 7 were deleted according to retention period.
+   We can check retention by this command:
+   
+   run `kafka-configs.sh --bootstrap-server [::1]:9092 --describe --topic first_topic --all | grep retention`
+
+   Output: 
+   > delete.retention.ms=86400000 sensitive=false synonyms={DEFAULT_CONFIG:log.cleaner.delete.retention.ms=86400000}
+   > <br>local.retention.bytes=-2 sensitive=false synonyms={DEFAULT_CONFIG:log.local.retention.bytes=-2}
+   > <br>local.retention.ms=-2 sensitive=false synonyms={DEFAULT_CONFIG:log.local.retention.ms=-2}
+   > <br>retention.bytes=-1 sensitive=false synonyms={DEFAULT_CONFIG:log.retention.bytes=-1}
+   > <br>retention.ms=604800000 sensitive=false synonyms={}
+  
+   Value `retention.ms=604800000` means 7 days.
+
+   So offset 7 is expected as I produced those previous Events several days ago.
+
+   Running such `earliest` Consumer more times will pull the same Events again and again. 
+   With this doesn't matter if we have the same or different GroupID
+
