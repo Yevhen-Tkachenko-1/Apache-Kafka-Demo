@@ -3,6 +3,18 @@ Learn and play with Apache Kafka
 
 Implemented based on LinkedIn Learning course: [Complete Guide to Apache Kafka for Beginners](https://www.linkedin.com/learning/complete-guide-to-apache-kafka-for-beginners)
 
+* [Tech Stack](#tech-stack)
+* [Short Theory](#short-theory)
+* [Software Preparation (Windows OS)](#software-preparation-windows-os)
+* [Start Kafka](#start-kafka)
+* [Kafka CLI: Topics](#kafka-cli-topics)
+* [Kafka CLI: Event Sending](#kafka-cli-event-sending)
+* [Kafka CLI: Event Receiving](#kafka-cli-event-receiving)
+   * [Consumer](#consumer)
+   * [Consumer Group](#consumer-group)
+   * [Consumer Offset](#consumer-offset)
+* [Kafka Java SDK: Event Sending](#kafka-java-sdk-event-sending)
+
 ## Tech Stack
 
 - Apache Kafka
