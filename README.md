@@ -544,7 +544,7 @@ Before running Java Producers/Consumers don't forget to have Kafka servers runni
 In this section we are going to set up Java Consumer, subscribe to a Topic(s) and pull Events.
 
 1. There is [example](Apache-Kafka-Basics/src/main/java/yevhent/demo/kafka/consumer/EarliestConsumerDemo.java)
-   of pulling `earliest` Events meaning read from beginning 
+   of pulling `earliest`, we read Events from beginning 
    (the same as `--from-beginning` parameter in CLI request to `kafka-console-consumer.sh`)
 
    There we have new Consumer GroupID and read previously sent Events, so output starts like this:
