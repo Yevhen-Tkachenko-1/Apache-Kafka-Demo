@@ -643,6 +643,16 @@ In this section we are going to set up Java Consumer, subscribe to a Topic(s) an
 
    ![](resources/8.6.PNG)
    
+3. So far we know that offset of Event consuming will be saved if we close Consumer appropriately.
+   But what if our Consumer server requested to restart or just stop its running?
+   In this [example](Apache-Kafka-Basics/src/main/java/yevhent/demo/kafka/consumer/DurableConsumerDemo.java)
+   we have improved version of "latest" Consumer that is ready for shutdowns.
 
+   We run this Consumer as usual, but while it's trying to pull Events, 
+   we stop/exit our app using red button in IntelliJ IDEA:
+   
+   ![](resources/9.PNG)
+
+   
    
  
