@@ -1,16 +1,13 @@
 package yevhent.demo.kafka.consumer;
 
-import org.apache.kafka.clients.admin.AdminClientConfig;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
-import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import yevhent.demo.kafka.KafkaProperty;
-import yevhent.demo.kafka.producer.SimpleEventProducerDemo;
 
 import java.time.Duration;
 import java.util.List;
@@ -49,14 +46,14 @@ public class EarliestConsumerDemo {
         properties.setProperty(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, KafkaProperty.BOOTSTRAP_SERVERS);
         properties.setProperty(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
         properties.setProperty(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
-        properties.setProperty(ConsumerConfig.GROUP_ID_CONFIG, "java-earliest-microservice");
+        properties.setProperty(ConsumerConfig.GROUP_ID_CONFIG, "java-earliest");
         properties.setProperty(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, AUTO_OFFSET_RESET_EARLIEST);
         properties.setProperty(ConsumerConfig.MAX_POLL_RECORDS_CONFIG, "10");
 
         KafkaConsumer<String, String> consumer = new KafkaConsumer<>(properties);
         consumer.subscribe(List.of(KafkaProperty.DEFAULT_TOPIC));
 
-        for (int i = 0; i < 3; i++) {
+        for (int i = 0; i < 2; i++) {
 
             LOGGER.info("Pulling messages " + i);
 
@@ -67,8 +64,7 @@ public class EarliestConsumerDemo {
                 LOGGER.info("Pulled record[{}][{}]: topic = {}, partition = {}, offset = {}, timestamp = {}, key = {}, value = {}",
                         i, j++, record.topic(), record.partition(), record.offset(), record.timestamp(), record.key(), record.value());
             }
-
-
         }
+        consumer.close();
     }
 }
