@@ -544,7 +544,7 @@ Before running Java Producers/Consumers don't forget to have Kafka servers runni
 In this section we are going to set up Java Consumer, subscribe to a Topic(s) and pull Events.
 
 1. There is [example](Apache-Kafka-Basics/src/main/java/yevhent/demo/kafka/consumer/EarliestConsumerDemo.java)
-   of pulling `earliest`, we read Events from beginning 
+   of pulling `earliest`, where we read Events from beginning 
    (the same as `--from-beginning` parameter in CLI request to `kafka-console-consumer.sh`)
 
    There we have new Consumer GroupID and read previously sent Events, so output starts like this:
@@ -553,14 +553,17 @@ In this section we are going to set up Java Consumer, subscribe to a Topic(s) an
 
    We can see that Kafka does setting for our Group offsets.
 
-   Then we see messages from 3 pulls:
+   Then we see messages from 2 pulls:
 
    ![](resources/7.2.PNG)
 
-    As our pulling is limited by 10 messages in 1 pull, we consumed only from `Partition 0` so far.
+   Finally, Kafka logs closing actions.
+
+   Our Group is brand new, so Kafka don't have committed offsets and give us Events from every beginning of Partition.
+   As our pulling is limited by 10 messages in 1 pull, so we consumed only from `Partition 0` so far.
 
    Why offset value starts from `7`? 
-   Cause for new Group it should be 0, isn't it?
+   For new Group it should be 0, isn't it?
    Answer is that Events before offset 7 were deleted according to retention period.
    We can check retention by this command:
    
@@ -577,6 +580,55 @@ In this section we are going to set up Java Consumer, subscribe to a Topic(s) an
 
    So offset 7 is expected as I produced those previous Events several days ago.
 
-   Running such `earliest` Consumer more times will pull the same Events again and again. 
-   With this doesn't matter if we have the same or different GroupID
+   Let's run the same Consumer few more times.
+  
+   Second consuming gave us Events from Partition 1, and shifted its offset:
+  
+   ![](resources/7.3.PNG)
 
+   Third consuming gave us Events from Partition 2, and shifted its offset:
+
+   ![](resources/7.4.PNG)
+
+   Finally, fourth consuming gave us Events from Partition 0, but for new offset 27 (previous was 7):
+
+   ![](resources/7.5.PNG)
+
+   That works, because we use the same Consumer Group and each time committed offset by `consumer.close()` method.
+
+2. There is other [example](Apache-Kafka-Basics/src/main/java/yevhent/demo/kafka/consumer/LatestConsumerDemo.java) 
+   of pulling `latest`, where we read only new Events 
+   (the same as default behaviour when we do CLI request to `kafka-console-consumer.sh` with no offset specified)
+   
+   Here we have new Consumer Group and start by pulling Events like this:
+
+   ![](resources/8.1.PNG)
+
+   Then in parallel we run Producers from previous section.
+
+   [First](Apache-Kafka-Basics/src/main/java/yevhent/demo/kafka/producer/SimpleEventProducerDemo.java)
+   one sends simple message and we see it like this:
+
+   ![](resources/8.2.PNG)
+   
+   [Next](Apache-Kafka-Basics/src/main/java/yevhent/demo/kafka/producer/SimpleEventProducerDemo.java)
+   one sends number of messages, 
+   
+   ![](resources/8.3.PNG)
+
+   and we consume all 100 Events in one pool:
+
+   ![](resources/8.4.PNG)
+
+   [Other](Apache-Kafka-Basics/src/main/java/yevhent/demo/kafka/producer/KeyedStreamProducerDemo.java)
+   Producer sends Events with Keys:
+
+   ![](resources/8.5.PNG)
+
+   and we consume all Events from different Partitions but in one pool: 
+
+   ![](resources/8.6.PNG)
+   
+
+   
+ 
