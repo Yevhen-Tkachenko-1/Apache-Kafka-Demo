@@ -1,23 +1,22 @@
 # Apache-Kafka-Demo
+
 Learn and play with Apache Kafka
 
-Implemented based on LinkedIn Learning course: [Complete Guide to Apache Kafka for Beginners](https://www.linkedin.com/learning/complete-guide-to-apache-kafka-for-beginners)
+Implemented based on LinkedIn Learning
+course: [Complete Guide to Apache Kafka for Beginners](https://www.linkedin.com/learning/complete-guide-to-apache-kafka-for-beginners)
 
-<!-- TOC -->
-* [Apache-Kafka-Demo](#apache-kafka-demo)
-  * [Tech Stack](#tech-stack)
-  * [Short Theory](#short-theory)
-  * [Software Preparation (Windows OS)](#software-preparation-windows-os)
-  * [Start Kafka](#start-kafka)
-  * [Kafka CLI: Topics](#kafka-cli-topics)
-  * [Kafka CLI: Event Sending](#kafka-cli-event-sending)
-  * [Kafka CLI: Event Receiving](#kafka-cli-event-receiving)
-      * [Consumer](#consumer)
-      * [Consumer Group](#consumer-group)
-      * [Consumer Offset](#consumer-offset)
-  * [Java SDK: Event Sending](#java-sdk-event-sending)
-  * [Java SDK: Event Receiving](#java-sdk-event-receiving)
-<!-- TOC -->
+* [Tech Stack](#tech-stack)
+* [Short Theory](#short-theory)
+* [Software Preparation (Windows OS)](#software-preparation-windows-os)
+* [Start Kafka](#start-kafka)
+* [Kafka CLI: Topics](#kafka-cli-topics)
+* [Kafka CLI: Event Sending](#kafka-cli-event-sending)
+* [Kafka CLI: Event Receiving](#kafka-cli-event-receiving)
+    * [Consumer](#consumer)
+    * [Consumer Group](#consumer-group)
+    * [Consumer Offset](#consumer-offset)
+* [Java SDK: Event Sending](#java-sdk-event-sending)
+* [Java SDK: Event Receiving](#java-sdk-event-receiving)
 
 ## Tech Stack
 
@@ -35,17 +34,17 @@ Implemented based on LinkedIn Learning course: [Complete Guide to Apache Kafka f
 
 - **Kafka Cluster** - entire service within microservice app.
 - **Topic** - logical part of Kafka Cluster for Event processing.
-  Event is some sort of data, e.g. Temperature changing over the time collected by City sensors. 
-- **Partition** - physical and logical part of Topic. 
+  Event is some sort of data, e.g. Temperature changing over the time collected by City sensors.
+- **Partition** - physical and logical part of Topic.
   When Events come to Topic they are distributed across several Partitions.
   Different Partitions may be located on the same or different physical machines.
-- **Kafka Broker** - physical part of Kafka Cluster. 
-  Only one Broker can be on the same physical machine. 
+- **Kafka Broker** - physical part of Kafka Cluster.
+  Only one Broker can be on the same physical machine.
   Broker may contain different Partitions from different Topics.
 - **Throughput** - thanks to Topic Partitioning,
   we can have several Clients that use the same Topic, but consume their specific data simultaneously.
-- **Scalability** - we can increase performance horizontally by adding new Kafka Brokers 
-  and rebalancing Partitions.  
+- **Scalability** - we can increase performance horizontally by adding new Kafka Brokers
+  and rebalancing Partitions.
 - **Durability** - each Partition of each Topic is replicated in different Brokers.
   In case one Broker is down, we can continue work with other replicas that are in live Brokers.
   Event is sent to a Leader replica.
@@ -55,7 +54,8 @@ Implemented based on LinkedIn Learning course: [Complete Guide to Apache Kafka f
 
 First, we have to set up WSL and install Kafka and ZooKeeper servers on our machine.
 
-Follow this instruction: [How to Install Apache Kafka on Windows?](https://www.conduktor.io/kafka/how-to-install-apache-kafka-on-windows/) 
+Follow this
+instruction: [How to Install Apache Kafka on Windows?](https://www.conduktor.io/kafka/how-to-install-apache-kafka-on-windows/)
 
 Used version `kafka_2.13-3.7.0`
 
@@ -79,9 +79,10 @@ In second Ubuntu window run `kafka-server-start.sh ~/kafka_2.13-3.7.0/config/ser
 
 Having Zookeeper and Kafka running, we can create new Topic.
 
-In third Ubuntu window run `kafka-topics.sh --bootstrap-server [::1]:9092 --topic first_topic --create --partitions 3 --replication-factor 1` 
+In third Ubuntu window
+run `kafka-topics.sh --bootstrap-server [::1]:9092 --topic first_topic --create --partitions 3 --replication-factor 1`
 
-As we are using localhost, `replication-factor` can't be more than 1 (number of server machines). 
+As we are using localhost, `replication-factor` can't be more than 1 (number of server machines).
 
 Then check Topics, run `kafka-topics.sh --bootstrap-server [::1]:9092 --list`
 
@@ -101,13 +102,14 @@ Output looks like this:
 
 ## Kafka CLI: Event Sending
 
-Having Topic named `first_topic` we can write Events to cmd. 
+Having Topic named `first_topic` we can write Events to cmd.
 To open input, run `kafka-console-producer.sh --bootstrap-server [::1]:9092 --topic first_topic`
 
 Now we can send Event by typing text and clicking Enter. Each text line represents 1 Event (message).
 To exit input click combination `ctrl+c`.
 
-The same way, we can send Events with Key specified, run `kafka-console-producer.sh --bootstrap-server [::1]:9092 --topic first_topic --property parse.key=true --property key.separator=:`
+The same way, we can send Events with Key specified,
+run `kafka-console-producer.sh --bootstrap-server [::1]:9092 --topic first_topic --property parse.key=true --property key.separator=:`
 
 So, message format is `key:value`, e.g. `city:Kyiv`
 
@@ -132,12 +134,12 @@ For our case, next messages were entered:
 
 Having some Events sent to `first_topic` Topic we can read all of them and then start waiting for new messages.
 
-run `kafka-console-consumer.sh --bootstrap-server [::1]:9092 --topic first_topic 
---property print.timestamp=true 
---property print.partition=true 
---property print.offset=true 
---property print.key=true 
---property print.value=true 
+run `kafka-console-consumer.sh --bootstrap-server [::1]:9092 --topic first_topic
+--property print.timestamp=true
+--property print.partition=true
+--property print.offset=true
+--property print.key=true
+--property print.value=true
 --from-beginning`
 
 Output looks like this:
@@ -157,7 +159,7 @@ Output looks like this:
 
 In new Ubuntu window we can send new Events one by one, and these messages will appear in output almost immediately.
 
-Let's say now we've entered 
+Let's say now we've entered
 
 | key  | value         |
 |------|---------------|
@@ -202,15 +204,15 @@ run `kafka-console-consumer.sh --bootstrap-server [::1]:9092 --topic first_topic
 
 Output looks like this:
 
-| timestamp                | partition   | offset   | key  | value         |
-|--------------------------|-------------|----------|------|---------------|
-| CreateTime:1715873458901 | Partition:1 | Offset:4 | city | K             |
-| CreateTime:1715873466165 | Partition:1 | Offset:5 | city | Kyiv          |
-| CreateTime:1715873470981 | Partition:1 | Offset:6 | city | Lviv          |
-| CreateTime:1715943659435 | Partition:1 | Offset:7 | name | NewYevhen     |
-| CreateTime:1715943684511 | Partition:1 | Offset:8 | city | NewKyiv       |
+| timestamp                | partition   | offset   | key  | value     |
+|--------------------------|-------------|----------|------|-----------|
+| CreateTime:1715873458901 | Partition:1 | Offset:4 | city | K         |
+| CreateTime:1715873466165 | Partition:1 | Offset:5 | city | Kyiv      |
+| CreateTime:1715873470981 | Partition:1 | Offset:6 | city | Lviv      |
+| CreateTime:1715943659435 | Partition:1 | Offset:7 | name | NewYevhen |
+| CreateTime:1715943684511 | Partition:1 | Offset:8 | city | NewKyiv   |
 
-By default, Events are read from the tail. 
+By default, Events are read from the tail.
 So, if we aren't interested in history, we are free to not specify reading start point.
 We can just open output and wait for new Events:
 
@@ -228,9 +230,9 @@ When we specify Group, Kafka stores state of Event consuming by this Group.
 
 In first Ubuntu window let's read all Events for `first_microservice` Group:
 
-run `kafka-console-consumer.sh --bootstrap-server [::1]:9092 --topic first_topic 
---group first_microservice 
---property print.partition=true 
+run `kafka-console-consumer.sh --bootstrap-server [::1]:9092 --topic first_topic
+--group first_microservice
+--property print.partition=true
 --from-beginning`
 
 By this, we got all messages from `first_topic`. Output looks like this:
@@ -257,23 +259,24 @@ Now, we're going to add one more Consumer within the same Group.
 
 In second Ubuntu window try to read the same way:
 
-run `kafka-console-consumer.sh --bootstrap-server [::1]:9092 --topic first_topic 
---group first_microservice 
---property print.partition=true 
+run `kafka-console-consumer.sh --bootstrap-server [::1]:9092 --topic first_topic
+--group first_microservice
+--property print.partition=true
 --from-beginning`
 
 As a result, we got no message, as they were already processed by first Consumer.
 
 Now, we're going to add one more Consumer with the _different_ Group.
 
-In third Ubuntu window try to read: 
+In third Ubuntu window try to read:
 
-run `kafka-console-consumer.sh --bootstrap-server [::1]:9092 --topic first_topic 
+run `kafka-console-consumer.sh --bootstrap-server [::1]:9092 --topic first_topic
 --group second_microservice
 --property print.partition=true
 --from-beginning`
 
-Again, we got all messages from `first_topic` as these messages were not consumed by `second_microservice`. Output looks like this:
+Again, we got all messages from `first_topic` as these messages were not consumed by `second_microservice`. Output looks
+like this:
 
 | partition   | value         |
 |-------------|---------------|
@@ -297,7 +300,7 @@ Now let's try to send Events on the fly, so we can see How messages are distribu
 
 In forth Ubuntu window we're going to send Events:
 
-run `kafka-console-producer.sh --bootstrap-server [::1]:9092 --topic first_topic 
+run `kafka-console-producer.sh --bootstrap-server [::1]:9092 --topic first_topic
 --producer-property partitioner.class=org.apache.kafka.clients.producer.RoundRobinPartitioner`
 
 Let's send next messages one by one:
@@ -369,7 +372,7 @@ Output looks like this:
 which means we've consumed all available Events.
 
 Now in sending Ubuntu window we can produce more messages like this:
-  
+
 | value |
 |-------|
 | i     |
@@ -449,7 +452,7 @@ We can update offsets not only by consuming Events, but also directly using comm
 
 run `kafka-consumer-groups.sh --bootstrap-server [::1]:9092 --group third_microservice
 --topic first_topic
---reset-offsets 
+--reset-offsets
 --to-earliest
 --execute`
 
@@ -465,21 +468,25 @@ By that we skipped all Events in queue in order to consume the newest ones.
 
 ## Java SDK: Event Sending
 
-Before running Java Producers/Consumers don't forget to have Kafka servers running on local machine as described in previous section.
+Before running Java Producers/Consumers don't forget to have Kafka servers running on local machine as described in
+previous section.
 
-1. The simplest message sending is shown [here](Apache-Kafka-Basics/src/main/java/yevhent/demo/kafka/producer/SimpleEventProducerDemo.java)
+1. The simplest message sending is
+   shown [here](Apache-Kafka-Basics/src/main/java/yevhent/demo/kafka/producer/SimpleEventProducerDemo.java)
    <br> Output looks like this:
-   
+
    ![](resources/1.PNG)
 
-2. Now let's try to simulate Event stream. Implementation is [here](Apache-Kafka-Basics/src/main/java/yevhent/demo/kafka/producer/SimpleStreamProducerDemo.java)
-   <br> When we send messages one by one they go to the same Partition. 
+2. Now let's try to simulate Event stream. Implementation
+   is [here](Apache-Kafka-Basics/src/main/java/yevhent/demo/kafka/producer/SimpleStreamProducerDemo.java)
+   <br> When we send messages one by one they go to the same Partition.
    <br> Output looks like this:
    ![](resources/2.PNG)
    <br> In our case all messages went to `Partition 2`
 
 3. Time to see When Events are distributed into different Partitions.
-   Implementation is [here](Apache-Kafka-Basics/src/main/java/yevhent/demo/kafka/producer/DistributedStreamProducerDemo.java)
+   Implementation
+   is [here](Apache-Kafka-Basics/src/main/java/yevhent/demo/kafka/producer/DistributedStreamProducerDemo.java)
    <br> One way is to decrease `batch.size` value. Default is `16384` and we have set `400`.
    <br> Output looks like this:
 
@@ -487,59 +494,62 @@ Before running Java Producers/Consumers don't forget to have Kafka servers runni
 
    Due to limited `batch.size` messages are distributed across all 3 `Partitions`.
 
-4. Up to this point we haven't used Keys yet. 
+4. Up to this point we haven't used Keys yet.
    Let's see how Events are distributed across Partitions when Key is specified.
    Implementation is [here](Apache-Kafka-Basics/src/main/java/yevhent/demo/kafka/producer/KeyedStreamProducerDemo.java)
-   <br>From business perspective, there we have 4 Keys which describe property of number from `-10` to `10`: 
-   - `negative_even`
-   - `positive_even`
-   - `negative_odd`
-   - `positive_odd`
-   
+   <br>From business perspective, there we have 4 Keys which describe property of number from `-10` to `10`:
+    - `negative_even`
+    - `positive_even`
+    - `negative_odd`
+    - `positive_odd`
+
    and no Key (`null`) in case of round numbers.
-   
+
    Partition by Partition output looks like this:
-   
+
    ![](resources/4.1.PNG)
 
    On the first picture we see that only values with Keys
-   `positive_odd` and `null` went to `Partition 0`. 
-   And it's true for both iterations `[1]` and `[2]`. 
+   `positive_odd` and `null` went to `Partition 0`.
+   And it's true for both iterations `[1]` and `[2]`.
 
    ![](resources/4.2.PNG)
 
    On the second picture we see that only values with Keys
    `negative_odd` and `positive_even` went to `Partition 1`.
-   And it's true for both iterations `[1]` and `[2]`. 
+   And it's true for both iterations `[1]` and `[2]`.
 
    ![](resources/4.3.PNG)
 
    On the third picture we see that only values with Keys
    `negative_even` went to `Partition 2`.
-   And it's true for both iterations `[1]` and `[2]`. 
+   And it's true for both iterations `[1]` and `[2]`.
 
-   Summarizing, messages with the same Keys go to the same Partition, 
+   Summarizing, messages with the same Keys go to the same Partition,
    and for that Key order is kept within Partition.
-    
-5. Let's proof that Events are not distributed if we have only one Key.
-   We can reuse previous [implementation](Apache-Kafka-Basics/src/main/java/yevhent/demo/kafka/producer/DistributedStreamProducerDemo.java)
-   but with Key specified. 
-   So, new implementation looks like [this](Apache-Kafka-Basics/src/main/java/yevhent/demo/kafka/producer/NotDistributedStreamProducerDemo.java)
-   
-   ![](resources/5.PNG)
-   
-   Now, all 100 messages went to one Partition, in my case it's `Partition 2` 
 
-6. Let's see if there is difference when we specify Key as `null` or as `"null"` 
+5. Let's proof that Events are not distributed if we have only one Key.
+   We can reuse
+   previous [implementation](Apache-Kafka-Basics/src/main/java/yevhent/demo/kafka/producer/DistributedStreamProducerDemo.java)
+   but with Key specified.
+   So, new implementation looks
+   like [this](Apache-Kafka-Basics/src/main/java/yevhent/demo/kafka/producer/NotDistributedStreamProducerDemo.java)
+
+   ![](resources/5.PNG)
+
+   Now, all 100 messages went to one Partition, in my case it's `Partition 2`
+
+6. Let's see if there is difference when we specify Key as `null` or as `"null"`
    or don't specify at all (don't pass additional parameter to Record constructor).
-   For that, I'm going to modify previous demo, so new one looks like [this](Apache-Kafka-Basics/src/main/java/yevhent/demo/kafka/producer/NullKeyStreamProducerDemo.java)
+   For that, I'm going to modify previous demo, so new one looks
+   like [this](Apache-Kafka-Basics/src/main/java/yevhent/demo/kafka/producer/NullKeyStreamProducerDemo.java)
 
    ![](resources/6.PNG)
 
-   - All values with Key `null` (as null reference) were distributed across all 3 Partitions.
-   - All values with Key not specified were distributed across all 3 Partitions.
-   - All values with Key `"null"` (as 'null' string) went to Partition 2.
-  
+    - All values with Key `null` (as null reference) were distributed across all 3 Partitions.
+    - All values with Key not specified were distributed across all 3 Partitions.
+    - All values with Key `"null"` (as 'null' string) went to Partition 2.
+
    So, we can use Key `null` the same way as when no Key specified, and such Events are not belong to any Partition.
    Whereas Key `"null"` works as a regular Key, e.g. `"123"`.
 
@@ -548,7 +558,7 @@ Before running Java Producers/Consumers don't forget to have Kafka servers runni
 In this section we are going to set up Java Consumer, subscribe to a Topic(s) and pull Events.
 
 1. There is [example](Apache-Kafka-Basics/src/main/java/yevhent/demo/kafka/consumer/EarliestConsumerDemo.java)
-   of pulling `earliest`, where we read Events from beginning 
+   of pulling `earliest`, where we read Events from beginning
    (the same as `--from-beginning` parameter in CLI request to `kafka-console-consumer.sh`)
 
    There we have new Consumer GroupID and read previously sent Events, so output starts like this:
@@ -566,28 +576,28 @@ In this section we are going to set up Java Consumer, subscribe to a Topic(s) an
    Our Group is brand new, so Kafka don't have committed offsets and give us Events from every beginning of Partition.
    As our pulling is limited by 10 messages in 1 pull, so we consumed only from `Partition 0` so far.
 
-   Why offset value starts from `7`? 
+   Why offset value starts from `7`?
    For new Group it should be 0, isn't it?
    Answer is that Events before offset 7 were deleted according to retention period.
    We can check retention by this command:
-   
+
    run `kafka-configs.sh --bootstrap-server [::1]:9092 --describe --topic first_topic --all | grep retention`
 
-   Output: 
+   Output:
    > delete.retention.ms=86400000 sensitive=false synonyms={DEFAULT_CONFIG:log.cleaner.delete.retention.ms=86400000}
    > <br>local.retention.bytes=-2 sensitive=false synonyms={DEFAULT_CONFIG:log.local.retention.bytes=-2}
    > <br>local.retention.ms=-2 sensitive=false synonyms={DEFAULT_CONFIG:log.local.retention.ms=-2}
    > <br>retention.bytes=-1 sensitive=false synonyms={DEFAULT_CONFIG:log.retention.bytes=-1}
    > <br>retention.ms=604800000 sensitive=false synonyms={}
-  
+
    Value `retention.ms=604800000` means 7 days.
 
    So offset 7 is expected as I produced those previous Events several days ago.
 
    Let's run the same Consumer few more times.
-  
+
    Second consuming gave us Events from Partition 1, and shifted its offset:
-  
+
    ![](resources/7.3.PNG)
 
    Third consuming gave us Events from Partition 2, and shifted its offset:
@@ -600,10 +610,10 @@ In this section we are going to set up Java Consumer, subscribe to a Topic(s) an
 
    That works, because we use the same Consumer Group and each time committed offset by `consumer.close()` method.
 
-2. There is other [example](Apache-Kafka-Basics/src/main/java/yevhent/demo/kafka/consumer/LatestConsumerDemo.java) 
-   of pulling `latest`, where we read only new Events 
+2. There is other [example](Apache-Kafka-Basics/src/main/java/yevhent/demo/kafka/consumer/LatestConsumerDemo.java)
+   of pulling `latest`, where we read only new Events
    (the same as default behaviour when we do CLI request to `kafka-console-consumer.sh` with no offset specified)
-   
+
    Here we have new Consumer Group and start by pulling Events like this:
 
    ![](resources/8.1.PNG)
@@ -614,10 +624,10 @@ In this section we are going to set up Java Consumer, subscribe to a Topic(s) an
    one sends simple message and we see it like this:
 
    ![](resources/8.2.PNG)
-   
+
    [Next](Apache-Kafka-Basics/src/main/java/yevhent/demo/kafka/producer/SimpleEventProducerDemo.java)
-   one sends number of messages, 
-   
+   one sends number of messages,
+
    ![](resources/8.3.PNG)
 
    and we consume all 100 Events in one pool:
@@ -629,7 +639,7 @@ In this section we are going to set up Java Consumer, subscribe to a Topic(s) an
 
    ![](resources/8.5.PNG)
 
-   and we consume all Events from different Partitions but in one pool: 
+   and we consume all Events from different Partitions but in one pool:
 
    ![](resources/8.6.PNG)
    
