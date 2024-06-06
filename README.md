@@ -471,188 +471,252 @@ By that we skipped all Events in queue in order to consume the newest ones.
 Before running Java Producers/Consumers don't forget to have Kafka servers running on local machine as described in
 previous section.
 
-1. The simplest message sending is
-   shown [here](Apache-Kafka-Basics/src/main/java/yevhent/demo/kafka/producer/SimpleEventProducerDemo.java)
-   <br> Output looks like this:
+#### Simple Event
 
-   ![](resources/1.PNG)
+The simplest message sending is
+shown [here](Apache-Kafka-Basics/src/main/java/yevhent/demo/kafka/producer/SimpleEventProducerDemo.java)
+<br> Output looks like this:
 
-2. Now let's try to simulate Event stream. Implementation
-   is [here](Apache-Kafka-Basics/src/main/java/yevhent/demo/kafka/producer/SimpleStreamProducerDemo.java)
-   <br> When we send messages one by one they go to the same Partition.
-   <br> Output looks like this:
-   ![](resources/2.PNG)
-   <br> In our case all messages went to `Partition 2`
+![](resources/1.PNG)
 
-3. Time to see When Events are distributed into different Partitions.
-   Implementation
-   is [here](Apache-Kafka-Basics/src/main/java/yevhent/demo/kafka/producer/DistributedStreamProducerDemo.java)
-   <br> One way is to decrease `batch.size` value. Default is `16384` and we have set `400`.
-   <br> Output looks like this:
+#### Event Stream
 
-   ![](resources/3.PNG)
+Now let's try to simulate Event stream. Implementation
+is [here](Apache-Kafka-Basics/src/main/java/yevhent/demo/kafka/producer/SimpleStreamProducerDemo.java)
+<br> When we send messages one by one they go to the same Partition.
+<br> Output looks like this:
+![](resources/2.PNG)
+<br> In our case all messages went to `Partition 2`
 
-   Due to limited `batch.size` messages are distributed across all 3 `Partitions`.
+#### Events Distribution
 
-4. Up to this point we haven't used Keys yet.
-   Let's see how Events are distributed across Partitions when Key is specified.
-   Implementation is [here](Apache-Kafka-Basics/src/main/java/yevhent/demo/kafka/producer/KeyedStreamProducerDemo.java)
-   <br>From business perspective, there we have 4 Keys which describe property of number from `-10` to `10`:
-    - `negative_even`
-    - `positive_even`
-    - `negative_odd`
-    - `positive_odd`
+Time to see When Events are distributed into different Partitions.
+Implementation
+is [here](Apache-Kafka-Basics/src/main/java/yevhent/demo/kafka/producer/DistributedStreamProducerDemo.java)
+<br> One way is to decrease `batch.size` value. Default is `16384` and we have set `400`.
+<br> Output looks like this:
 
-   and no Key (`null`) in case of round numbers.
+![](resources/3.PNG)
 
-   Partition by Partition output looks like this:
+Due to limited `batch.size` messages are distributed across all 3 `Partitions`.
 
-   ![](resources/4.1.PNG)
+#### Events with Keys
 
-   On the first picture we see that only values with Keys
-   `positive_odd` and `null` went to `Partition 0`.
-   And it's true for both iterations `[1]` and `[2]`.
+Up to this point we haven't used Keys yet.
+Let's see how Events are distributed across Partitions when Key is specified.
+Implementation is [here](Apache-Kafka-Basics/src/main/java/yevhent/demo/kafka/producer/KeyedStreamProducerDemo.java)
+<br>From business perspective, there we have 4 Keys which describe property of number from `-10` to `10`:
 
-   ![](resources/4.2.PNG)
+- `negative_even`
+- `positive_even`
+- `negative_odd`
+- `positive_odd`
 
-   On the second picture we see that only values with Keys
-   `negative_odd` and `positive_even` went to `Partition 1`.
-   And it's true for both iterations `[1]` and `[2]`.
+and no Key (`null`) in case of round numbers.
 
-   ![](resources/4.3.PNG)
+Partition by Partition output looks like this:
 
-   On the third picture we see that only values with Keys
-   `negative_even` went to `Partition 2`.
-   And it's true for both iterations `[1]` and `[2]`.
+![](resources/4.1.PNG)
 
-   Summarizing, messages with the same Keys go to the same Partition,
-   and for that Key order is kept within Partition.
+On the first picture we see that only values with Keys
+`positive_odd` and `null` went to `Partition 0`.
+And it's true for both iterations `[1]` and `[2]`.
 
-5. Let's proof that Events are not distributed if we have only one Key.
-   We can reuse
-   previous [implementation](Apache-Kafka-Basics/src/main/java/yevhent/demo/kafka/producer/DistributedStreamProducerDemo.java)
-   but with Key specified.
-   So, new implementation looks
-   like [this](Apache-Kafka-Basics/src/main/java/yevhent/demo/kafka/producer/NotDistributedStreamProducerDemo.java)
+![](resources/4.2.PNG)
 
-   ![](resources/5.PNG)
+On the second picture we see that only values with Keys
+`negative_odd` and `positive_even` went to `Partition 1`.
+And it's true for both iterations `[1]` and `[2]`.
 
-   Now, all 100 messages went to one Partition, in my case it's `Partition 2`
+![](resources/4.3.PNG)
 
-6. Let's see if there is difference when we specify Key as `null` or as `"null"`
-   or don't specify at all (don't pass additional parameter to Record constructor).
-   For that, I'm going to modify previous demo, so new one looks
-   like [this](Apache-Kafka-Basics/src/main/java/yevhent/demo/kafka/producer/NullKeyStreamProducerDemo.java)
+On the third picture we see that only values with Keys
+`negative_even` went to `Partition 2`.
+And it's true for both iterations `[1]` and `[2]`.
 
-   ![](resources/6.PNG)
+Summarizing, messages with the same Keys go to the same Partition,
+and for that Key order is kept within Partition.
 
-    - All values with Key `null` (as null reference) were distributed across all 3 Partitions.
-    - All values with Key not specified were distributed across all 3 Partitions.
-    - All values with Key `"null"` (as 'null' string) went to Partition 2.
+#### Events with Keys partitioning
 
-   So, we can use Key `null` the same way as when no Key specified, and such Events are not belong to any Partition.
-   Whereas Key `"null"` works as a regular Key, e.g. `"123"`.
+Let's proof that Events are not distributed if we have only one Key.
+We can reuse
+previous [implementation](Apache-Kafka-Basics/src/main/java/yevhent/demo/kafka/producer/DistributedStreamProducerDemo.java)
+but with Key specified.
+So, new implementation looks
+like [this](Apache-Kafka-Basics/src/main/java/yevhent/demo/kafka/producer/NotDistributedStreamProducerDemo.java)
+
+![](resources/5.PNG)
+
+Now, all 100 messages went to one Partition, in my case it's `Partition 2`
+
+#### Events with null Keys
+
+Let's see if there is difference when we specify Key as `null` or as `"null"`
+or don't specify at all (don't pass additional parameter to Record constructor).
+For that, I'm going to modify previous demo, so new one looks
+like [this](Apache-Kafka-Basics/src/main/java/yevhent/demo/kafka/producer/NullKeyStreamProducerDemo.java)
+
+![](resources/6.PNG)
+
+- All values with Key `null` (as null reference) were distributed across all 3 Partitions.
+- All values with Key not specified were distributed across all 3 Partitions.
+- All values with Key `"null"` (as 'null' string) went to Partition 2.
+
+So, we can use Key `null` the same way as when no Key specified, and such Events are not belong to any Partition.
+Whereas Key `"null"` works as a regular Key, e.g. `"123"`.
 
 ## Java SDK: Event Receiving
 
 In this section we are going to set up Java Consumer, subscribe to a Topic(s) and pull Events.
 
-1. There is [example](Apache-Kafka-Basics/src/main/java/yevhent/demo/kafka/consumer/EarliestConsumerDemo.java)
-   of pulling `earliest`, where we read Events from beginning
-   (the same as `--from-beginning` parameter in CLI request to `kafka-console-consumer.sh`)
+#### Earliest Consumer
 
-   There we have new Consumer GroupID and read previously sent Events, so output starts like this:
+There is [example](Apache-Kafka-Basics/src/main/java/yevhent/demo/kafka/consumer/EarliestConsumerDemo.java)
+of pulling `earliest`, where we read Events from beginning
+(the same as `--from-beginning` parameter in CLI request to `kafka-console-consumer.sh`)
 
-   ![](resources/7.1.PNG)
+There we have new Consumer GroupID and read previously sent Events, so output starts like this:
 
-   We can see that Kafka does setting for our Group offsets.
+![](resources/7.1.PNG)
 
-   Then we see messages from 2 pulls:
+We can see that Kafka does setting for our Group offsets.
 
-   ![](resources/7.2.PNG)
+Then we see messages from 2 pulls:
 
-   Finally, Kafka logs closing actions.
+![](resources/7.2.PNG)
 
-   Our Group is brand new, so Kafka don't have committed offsets and give us Events from every beginning of Partition.
-   As our pulling is limited by 10 messages in 1 pull, so we consumed only from `Partition 0` so far.
+Finally, Kafka logs closing actions.
 
-   Why offset value starts from `7`?
-   For new Group it should be 0, isn't it?
-   Answer is that Events before offset 7 were deleted according to retention period.
-   We can check retention by this command:
+Our Group is brand new, so Kafka don't have committed offsets and give us Events from every beginning of Partition.
+As our pulling is limited by 10 messages in 1 pull, so we consumed only from `Partition 0` so far.
 
-   run `kafka-configs.sh --bootstrap-server [::1]:9092 --describe --topic first_topic --all | grep retention`
+Why offset value starts from `7`?
+For new Group it should be 0, isn't it?
+Answer is that Events before offset 7 were deleted according to retention period.
+We can check retention by this command:
 
-   Output:
-   > delete.retention.ms=86400000 sensitive=false synonyms={DEFAULT_CONFIG:log.cleaner.delete.retention.ms=86400000}
-   > <br>local.retention.bytes=-2 sensitive=false synonyms={DEFAULT_CONFIG:log.local.retention.bytes=-2}
-   > <br>local.retention.ms=-2 sensitive=false synonyms={DEFAULT_CONFIG:log.local.retention.ms=-2}
-   > <br>retention.bytes=-1 sensitive=false synonyms={DEFAULT_CONFIG:log.retention.bytes=-1}
-   > <br>retention.ms=604800000 sensitive=false synonyms={}
+run `kafka-configs.sh --bootstrap-server [::1]:9092 --describe --topic first_topic --all | grep retention`
 
-   Value `retention.ms=604800000` means 7 days.
+Output:
+> delete.retention.ms=86400000 sensitive=false synonyms={DEFAULT_CONFIG:log.cleaner.delete.retention.ms=86400000}
+> <br>local.retention.bytes=-2 sensitive=false synonyms={DEFAULT_CONFIG:log.local.retention.bytes=-2}
+> <br>local.retention.ms=-2 sensitive=false synonyms={DEFAULT_CONFIG:log.local.retention.ms=-2}
+> <br>retention.bytes=-1 sensitive=false synonyms={DEFAULT_CONFIG:log.retention.bytes=-1}
+> <br>retention.ms=604800000 sensitive=false synonyms={}
 
-   So offset 7 is expected as I produced those previous Events several days ago.
+Value `retention.ms=604800000` means 7 days.
 
-   Let's run the same Consumer few more times.
+So offset 7 is expected as I produced those previous Events several days ago.
 
-   Second consuming gave us Events from Partition 1, and shifted its offset:
+Let's run the same Consumer few more times.
 
-   ![](resources/7.3.PNG)
+Second consuming gave us Events from Partition 1, and shifted its offset:
 
-   Third consuming gave us Events from Partition 2, and shifted its offset:
+![](resources/7.3.PNG)
 
-   ![](resources/7.4.PNG)
+Third consuming gave us Events from Partition 2, and shifted its offset:
 
-   Finally, fourth consuming gave us Events from Partition 0, but for new offset 27 (previous was 7):
+![](resources/7.4.PNG)
 
-   ![](resources/7.5.PNG)
+Finally, fourth consuming gave us Events from Partition 0, but for new offset 27 (previous was 7):
 
-   That works, because we use the same Consumer Group and each time committed offset by `consumer.close()` method.
+![](resources/7.5.PNG)
 
-2. There is other [example](Apache-Kafka-Basics/src/main/java/yevhent/demo/kafka/consumer/LatestConsumerDemo.java)
-   of pulling `latest`, where we read only new Events
-   (the same as default behaviour when we do CLI request to `kafka-console-consumer.sh` with no offset specified)
+That works, because we use the same Consumer Group and each time committed offset by `consumer.close()` method.
 
-   Here we have new Consumer Group and start by pulling Events like this:
+#### Earliest Consumer
 
-   ![](resources/8.1.PNG)
+There is other [example](Apache-Kafka-Basics/src/main/java/yevhent/demo/kafka/consumer/LatestConsumerDemo.java)
+of pulling `latest`, where we read only new Events
+(the same as default behaviour when we do CLI request to `kafka-console-consumer.sh` with no offset specified)
 
-   Then in parallel we run Producers from previous section.
+Here we have new Consumer Group and start by pulling Events like this:
 
-   [First](Apache-Kafka-Basics/src/main/java/yevhent/demo/kafka/producer/SimpleEventProducerDemo.java)
-   one sends simple message and we see it like this:
+![](resources/8.1.PNG)
 
-   ![](resources/8.2.PNG)
+Then in parallel we run Producers from previous section.
 
-   [Next](Apache-Kafka-Basics/src/main/java/yevhent/demo/kafka/producer/SimpleEventProducerDemo.java)
-   one sends number of messages,
+[First](Apache-Kafka-Basics/src/main/java/yevhent/demo/kafka/producer/SimpleEventProducerDemo.java)
+one sends simple message and we see it like this:
 
-   ![](resources/8.3.PNG)
+![](resources/8.2.PNG)
 
-   and we consume all 100 Events in one pool:
+[Next](Apache-Kafka-Basics/src/main/java/yevhent/demo/kafka/producer/SimpleEventProducerDemo.java)
+one sends number of messages,
 
-   ![](resources/8.4.PNG)
+![](resources/8.3.PNG)
 
-   [Other](Apache-Kafka-Basics/src/main/java/yevhent/demo/kafka/producer/KeyedStreamProducerDemo.java)
-   Producer sends Events with Keys:
+and we consume all 100 Events in one pool:
 
-   ![](resources/8.5.PNG)
+![](resources/8.4.PNG)
 
-   and we consume all Events from different Partitions but in one pool:
+[Other](Apache-Kafka-Basics/src/main/java/yevhent/demo/kafka/producer/KeyedStreamProducerDemo.java)
+Producer sends Events with Keys:
 
-   ![](resources/8.6.PNG)
-   
-3. So far we know that offset of Event consuming will be saved if we close Consumer appropriately.
-   But what if our Consumer server requested to restart or just stop its running?
-   In this [example](Apache-Kafka-Basics/src/main/java/yevhent/demo/kafka/consumer/DurableConsumerDemo.java)
-   we have improved version of "latest" Consumer that is ready for shutdowns.
+![](resources/8.5.PNG)
 
-   We run this Consumer as usual, but while it's trying to pull Events, 
-   we stop/exit our app using red button in IntelliJ IDEA:
-   
-   ![](resources/9.PNG)
+and we consume all Events from different Partitions but in one pool:
 
-   
-   
- 
+![](resources/8.6.PNG)
+
+#### Durable Consumer
+
+So far we know that offset of Event consuming will be saved if we close Consumer appropriately.
+But what if our Consumer server requested to restart or just stop its running?
+In this [example](Apache-Kafka-Basics/src/main/java/yevhent/demo/kafka/consumer/DurableConsumerDemo.java)
+we have improved version of "latest" Consumer that is ready for shutdowns.
+
+We run this Consumer as usual, but while it's trying to pull Events,
+we stop/exit our app using red button in IntelliJ IDEA:
+
+![](resources/9.PNG)
+
+Even pulling process was interrupted, we handled exception and closed consuming.
+
+#### Consumer rebalancing
+
+Now let's see How Kafka give us high throughput by handling several consumers in parallel.
+
+We have [Consumer](Apache-Kafka-Basics/src/main/java/yevhent/demo/kafka/consumer/ParallelConsumerDemo.java)
+that we are going to start several times so that 3 instances will be in the same consumer group.
+
+Before doing it, make sure you have next setting in IntelliJ IDEA `Allow multiple instances`:
+
+![](resources/10.1.PNG)
+
+When we start our Consumer first time, it gets all 3 Partitions to read from:
+
+![](resources/10.2.PNG)
+
+Then we start second instance, and see rebalancing:
+
+![](resources/10.3.PNG)
+
+First instance now read only from Partition 2, and other 2 Partitions are reassigned to second instance:
+
+![](resources/10.4.PNG)
+
+Now, let's add one more instance, results are next instance by instance:
+
+![](resources/10.5.PNG)
+![](resources/10.6.PNG)
+![](resources/10.7.PNG)
+
+So, each Consumer within the same Group has its own Partition which is quite efficient.
+
+Reverse process happens when we reduce number of running instances.
+
+Let's stop first instance:
+
+![](resources/10.8.PNG)
+
+Partition 1 was revoked and rebalancing happened for other 2 instances:
+
+![](resources/10.9.PNG)
+
+![](resources/10.10.PNG)
+
+Even for third instance nothing was changed (it had Partition 2 and now has Partition 2),
+this instance took a part in rebalancing process anyway.
+
