@@ -24,9 +24,9 @@ course: [Complete Guide to Apache Kafka for Beginners](https://www.linkedin.com/
     * [Events with null Keys](#events-with-null-keys)
 * [Java SDK: Event Receiving](#java-sdk-event-receiving)
     * [Earliest Consumer](#earliest-consumer)
-    * [Earliest Consumer](#earliest-consumer-1)
+    * [Latest Consumer](#latest-consumer)
     * [Durable Consumer](#durable-consumer)
-    * [Consumer rebalancing](#consumer-rebalancing)
+    * [Consumer Group Rebalancing](#consumer-group-rebalancing)
 
 ## Tech Stack
 
@@ -635,7 +635,7 @@ Finally, fourth consuming gave us Events from Partition 0, but for new offset 27
 
 That works, because we use the same Consumer Group and each time committed offset by `consumer.close()` method.
 
-#### Earliest Consumer
+#### Latest Consumer
 
 There is other [example](Apache-Kafka-Basics/src/main/java/yevhent/demo/kafka/consumer/LatestConsumerDemo.java)
 of pulling `latest`, where we read only new Events
@@ -684,7 +684,7 @@ we stop/exit our app using red button in IntelliJ IDEA:
 
 Even pulling process was interrupted, we handled exception and closed consuming.
 
-#### Consumer rebalancing
+#### Consumer Group Rebalancing
 
 Now let's see How Kafka give us high throughput by handling several consumers in parallel.
 
