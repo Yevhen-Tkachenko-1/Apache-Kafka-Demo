@@ -16,7 +16,17 @@ course: [Complete Guide to Apache Kafka for Beginners](https://www.linkedin.com/
     * [Consumer Group](#consumer-group)
     * [Consumer Offset](#consumer-offset)
 * [Java SDK: Event Sending](#java-sdk-event-sending)
+    * [Simple Event](#simple-event)
+    * [Event Stream](#event-stream)
+    * [Events Distribution](#events-distribution)
+    * [Events with Keys](#events-with-keys)
+    * [Events with Keys partitioning](#events-with-keys-partitioning)
+    * [Events with null Keys](#events-with-null-keys)
 * [Java SDK: Event Receiving](#java-sdk-event-receiving)
+    * [Earliest Consumer](#earliest-consumer)
+    * [Earliest Consumer](#earliest-consumer-1)
+    * [Durable Consumer](#durable-consumer)
+    * [Consumer rebalancing](#consumer-rebalancing)
 
 ## Tech Stack
 
