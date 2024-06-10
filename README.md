@@ -740,7 +740,8 @@ Actually, there is auto commit process that works by default.
 According to properties `auto.commit.interval.ms = 5000` and `enable.auto.commit = true`
 it happens each 5 seconds and in code looks like this `consumer.commitAsync()`
 
-Let's review one case, where our Consumer stop execution and committed offset doesn't match the latest consumed Event.
+Let's review one case, where our [Consumer](Apache-Kafka-Basics/src/main/java/yevhent/demo/kafka/consumer/DefaultCommitConsumerDemo.java) 
+stop execution and committed offset doesn't match the latest consumed Event.
 
 Here we have new consumer group and first consumption looks like this:
 
@@ -750,7 +751,7 @@ For Partition 0 we started from offset 7 and went to 36:
 
 ![](resources/11.2.PNG)
 
-So that we expect that offset of next Event is 37. 
+So, we expect that offset of next Event is 37. 
 Let's run same Consumer one more time and see offset:
 
 ![](resources/11.3.PNG)
