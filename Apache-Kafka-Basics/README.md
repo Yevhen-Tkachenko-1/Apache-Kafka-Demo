@@ -1,11 +1,11 @@
 # Apache Kafka Basics
 
-* [Kafka CLI: Topics](#kafka-cli-topics)
-* [Kafka CLI: Event Sending](#kafka-cli-event-sending)
-* [Kafka CLI: Event Receiving](#kafka-cli-event-receiving)
-    * [Consumer](#consumer)
-    * [Consumer Group](#consumer-group)
-    * [Consumer Offset](#consumer-offset)
+* [Kafka CLI](#kafka-cli)
+    * [Topics](#topics)
+    * [Event Sending](#event-sending)
+    * [Event Receiving: Consumer](#event-receiving-consumer)
+    * [Event Receiving: Consumer Group](#event-receiving-consumer-group)
+    * [Event Receiving: Consumer Offset](#event-receiving-consumer-offset)
 * [Java SDK: Event Sending](#java-sdk-event-sending)
     * [Simple Event](#simple-event)
     * [Event Stream](#event-stream)
@@ -20,7 +20,9 @@
     * [Consumer Group Rebalancing](#consumer-group-rebalancing)
     * [Default offset commit](#default-offset-commit)
 
-## Kafka CLI: Topics
+## Kafka CLI
+
+#### Topics
 
 Having Zookeeper and Kafka running, we can create new Topic.
 
@@ -45,7 +47,7 @@ Output looks like this:
 | Topic: first_topic | Partition: 1 | Leader: 0 | Replicas: 0 | Isr: 0 |
 | Topic: first_topic | Partition: 2 | Leader: 0 | Replicas: 0 | Isr: 0 |
 
-## Kafka CLI: Event Sending
+#### Event Sending
 
 Having Topic named `first_topic` we can write Events to cmd.
 To open input, run `kafka-console-producer.sh --bootstrap-server [::1]:9092 --topic first_topic`
@@ -73,9 +75,7 @@ For our case, next messages were entered:
 | city | Kyiv          |
 | city | Lviv          |
 
-## Kafka CLI: Event Receiving
-
-#### Consumer
+#### Event Receiving: Consumer
 
 Having some Events sent to `first_topic` Topic we can read all of them and then start waiting for new messages.
 
@@ -168,7 +168,7 @@ run `kafka-console-consumer.sh --bootstrap-server [::1]:9092 --topic first_topic
 --property print.key=true
 --property print.value=true`
 
-#### Consumer Group
+#### Event Receiving: Consumer Group
 
 So, what about reading Events only once? Let's try `Consumer Groups`.
 When we specify Group, Kafka stores state of Event consuming by this Group.
@@ -291,7 +291,7 @@ Moreover, we see that first Consumer received messages from 2 Partitions,
 while second Consumer just from one Partition.
 For `second_microservice` Group we got all same Events.
 
-#### Consumer Offset
+#### Event Receiving: Consumer Offset
 
 Now let's check specific properties for Consumer Group status.
 
