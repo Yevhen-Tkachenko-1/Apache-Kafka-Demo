@@ -730,3 +730,31 @@ Partition 1 was revoked and rebalancing happened for other 2 instances:
 Even for third instance nothing was changed (it had Partition 2 and now has Partition 2),
 this instance took a part in rebalancing process anyway.
 
+#### Default offset commit
+
+In previous sections we've seen that consuming of the latest message  
+is properly committed by current offset when we close Consumer.
+
+Is it only one way to commit offset? 
+Actually, there is auto commit process that works by default. 
+According to properties `auto.commit.interval.ms = 5000` and `enable.auto.commit = true`
+it happens each 5 seconds and in code looks like this `consumer.commitAsync()`
+
+Let's review one case, where our Consumer stop execution and committed offset doesn't match the latest consumed Event.
+
+Here we have new consumer group and first consumption looks like this:
+
+![](resources/11.1.PNG)
+
+For Partition 0 we started from offset 7 and went to 36:
+
+![](resources/11.2.PNG)
+
+So that we expect that offset of next Event is 37. 
+Let's run same Consumer one more time and see offset:
+
+![](resources/11.3.PNG)
+
+Surprisingly, it's 31 which means offset was committed 
+between pulling 7 and pulling 8 (not after pulling 9).
+Relying on such default behaviour may lead to data inconsistency when we consume the same Events several times.
