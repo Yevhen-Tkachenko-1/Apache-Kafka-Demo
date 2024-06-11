@@ -3,29 +3,30 @@ package yevhent.demo.kafka.wikimedia;
 import com.launchdarkly.eventsource.EventSource;
 import com.launchdarkly.eventsource.background.BackgroundEventHandler;
 import com.launchdarkly.eventsource.background.BackgroundEventSource;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import yevhent.demo.kafka.ApplicationProperty;
+import yevhent.demo.kafka.model.WikimediaRecentchange;
 
+import java.io.Closeable;
 import java.net.URI;
-import java.util.concurrent.TimeUnit;
+import java.util.function.Consumer;
 
-public class WikimediaRecentchangeSource {
+public class WikimediaRecentchangeSource implements Closeable {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(WikimediaRecentchangeSource.class);
+    private final BackgroundEventSource eventSource;
 
-    public static void sendRecentchanges(long seconds) {
-
-        LOGGER.info("Hello world!");
-
+    public WikimediaRecentchangeSource(Consumer<WikimediaRecentchange> eventConsumer) {
         URI wikimediaURI = URI.create(ApplicationProperty.WIKIMEDIA_RECENTCHANGE_URI);
-        BackgroundEventHandler eventHandler = new WikimediaRecentchangeHandler();
+        BackgroundEventHandler eventHandler = new WikimediaRecentchangeHandler(eventConsumer);
 
-        try (BackgroundEventSource eventSource = new BackgroundEventSource.Builder(eventHandler, new EventSource.Builder(wikimediaURI)).build()) {
-            eventSource.start();
-            TimeUnit.SECONDS.sleep(seconds);
-        } catch (Exception e) {
-            LOGGER.error(e.getMessage());
-        }
+        eventSource = new BackgroundEventSource.Builder(eventHandler, new EventSource.Builder(wikimediaURI)).build();
+    }
+
+    public void start() {
+        eventSource.start();
+    }
+
+    @Override
+    public void close() {
+        eventSource.close();
     }
 }

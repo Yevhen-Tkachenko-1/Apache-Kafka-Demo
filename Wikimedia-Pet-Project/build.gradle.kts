@@ -22,6 +22,8 @@ dependencies {
     // https://mvnrepository.com/artifact/com.launchdarkly/okhttp-eventsource
     implementation("com.launchdarkly:okhttp-eventsource:4.1.1")
 
+    // https://mvnrepository.com/artifact/org.json/json
+    implementation("org.json:json:20240303")
 }
 
 tasks.test {
