@@ -1,4 +1,4 @@
-package yevhent.demo.kafka.model;
+package yevhent.project.wikimedia.model;
 
 import org.json.JSONObject;
 

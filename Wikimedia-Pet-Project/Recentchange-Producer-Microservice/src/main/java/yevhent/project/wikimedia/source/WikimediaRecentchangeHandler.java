@@ -1,10 +1,10 @@
-package yevhent.demo.kafka.wikimedia;
+package yevhent.project.wikimedia.source;
 
 import com.launchdarkly.eventsource.MessageEvent;
 import com.launchdarkly.eventsource.background.BackgroundEventHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import yevhent.demo.kafka.model.WikimediaRecentchange;
+import yevhent.project.wikimedia.model.WikimediaRecentchange;
 
 import java.util.function.Consumer;
 

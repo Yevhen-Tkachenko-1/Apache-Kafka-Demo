@@ -1,4 +1,4 @@
-package yevhent.demo.kafka;
+package yevhent.project.wikimedia;
 
 public class ApplicationProperty {
 

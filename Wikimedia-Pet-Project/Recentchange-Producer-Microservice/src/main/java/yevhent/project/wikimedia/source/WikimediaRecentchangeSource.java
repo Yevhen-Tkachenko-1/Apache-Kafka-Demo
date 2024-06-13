@@ -1,10 +1,10 @@
-package yevhent.demo.kafka.wikimedia;
+package yevhent.project.wikimedia.source;
 
 import com.launchdarkly.eventsource.EventSource;
 import com.launchdarkly.eventsource.background.BackgroundEventHandler;
 import com.launchdarkly.eventsource.background.BackgroundEventSource;
-import yevhent.demo.kafka.ApplicationProperty;
-import yevhent.demo.kafka.model.WikimediaRecentchange;
+import yevhent.project.wikimedia.ApplicationProperty;
+import yevhent.project.wikimedia.model.WikimediaRecentchange;
 
 import java.io.Closeable;
 import java.net.URI;

@@ -2,7 +2,7 @@ plugins {
     id("java")
 }
 
-group = "yevhent.demo.kafka"
+group = "yevhent.project.wikimedia"
 version = "1.0-SNAPSHOT"
 
 repositories {

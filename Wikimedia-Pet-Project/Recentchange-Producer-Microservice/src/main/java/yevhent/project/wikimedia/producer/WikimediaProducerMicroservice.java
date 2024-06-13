@@ -1,9 +1,9 @@
-package yevhent.demo.kafka.producer;
+package yevhent.project.wikimedia.producer;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import yevhent.demo.kafka.ApplicationProperty;
-import yevhent.demo.kafka.wikimedia.WikimediaRecentchangeSource;
+import yevhent.project.wikimedia.ApplicationProperty;
+import yevhent.project.wikimedia.source.WikimediaRecentchangeSource;
 
 import java.util.concurrent.TimeUnit;
 

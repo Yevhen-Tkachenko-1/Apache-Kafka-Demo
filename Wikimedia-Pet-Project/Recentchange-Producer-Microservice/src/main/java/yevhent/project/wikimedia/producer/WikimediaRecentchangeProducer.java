@@ -1,12 +1,12 @@
-package yevhent.demo.kafka.producer;
+package yevhent.project.wikimedia.producer;
 
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.common.serialization.StringSerializer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import yevhent.demo.kafka.ApplicationProperty;
-import yevhent.demo.kafka.model.WikimediaRecentchange;
+import yevhent.project.wikimedia.ApplicationProperty;
+import yevhent.project.wikimedia.model.WikimediaRecentchange;
 
 import java.io.Closeable;
 import java.util.Properties;
