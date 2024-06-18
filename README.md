@@ -4,6 +4,7 @@ Learn and play with Apache Kafka
 
 Implemented based on LinkedIn Learning
 course: [Complete Guide to Apache Kafka for Beginners](https://www.linkedin.com/learning/complete-guide-to-apache-kafka-for-beginners)
+with related GitHub repository: [conduktor/kafka-beginners-course](https://github.com/conduktor/kafka-beginners-course)
 
 * [Tech Stack](#tech-stack)
 * [Short Theory](#short-theory)

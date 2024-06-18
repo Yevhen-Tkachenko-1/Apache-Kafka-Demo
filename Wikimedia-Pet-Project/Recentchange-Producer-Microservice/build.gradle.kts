@@ -24,6 +24,8 @@ dependencies {
 
     // https://mvnrepository.com/artifact/org.json/json
     implementation("org.json:json:20240303")
+
+    implementation(project(":Wikimedia-Pet-Project:Application-Common"))
 }
 
 tasks.test {
