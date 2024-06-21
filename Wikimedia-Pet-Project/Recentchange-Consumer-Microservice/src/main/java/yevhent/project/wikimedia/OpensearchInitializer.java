@@ -48,7 +48,6 @@ public class OpensearchInitializer {
 
         } catch (IOException e) {
             LOGGER.error(e.getMessage());
-            e.printStackTrace();
             throw new RuntimeException(e);
         }
     }

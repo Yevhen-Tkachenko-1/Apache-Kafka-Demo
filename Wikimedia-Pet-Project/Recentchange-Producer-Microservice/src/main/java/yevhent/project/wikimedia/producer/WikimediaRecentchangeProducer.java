@@ -28,7 +28,7 @@ public class WikimediaRecentchangeProducer implements Consumer<WikimediaRecentch
 
     @Override
     public void accept(WikimediaRecentchange message) {
-        kafkaProducer.send(new ProducerRecord<>(ApplicationProperty.KAFKA_WIKIMEDIA_RECENTCHANGE_TOPIC, message.getTitle(), message.toString()),
+        kafkaProducer.send(new ProducerRecord<>(ApplicationProperty.KAFKA_WIKIMEDIA_RECENTCHANGE_TOPIC, message.getTitle(), message.toJson()),
                 (metadata, exception) -> {
                     if (exception == null) {
                         LOGGER.info("Message produced: topic = {}, partition = {}, offset = {}, timestamp = {}, message = {}",

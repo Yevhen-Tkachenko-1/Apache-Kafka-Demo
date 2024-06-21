@@ -72,4 +72,72 @@ public class WikimediaRecentchange {
                 ", parsedComment='" + parsedComment + '\'' +
                 '}';
     }
+
+    public String toJson(){
+        return new JSONObject(this).toString();
+    }
+
+    public long getId() {
+        return id;
+    }
+
+    public long getTimestamp() {
+        return timestamp;
+    }
+
+    public boolean isMinor() {
+        return isMinor;
+    }
+
+    public boolean isBot() {
+        return isBot;
+    }
+
+    public boolean isPatrolled() {
+        return isPatrolled;
+    }
+
+    public long getNewRevision() {
+        return newRevision;
+    }
+
+    public long getOldRevision() {
+        return oldRevision;
+    }
+
+    public int getNewLength() {
+        return newLength;
+    }
+
+    public int getOldLength() {
+        return oldLength;
+    }
+
+    public String getMeta() {
+        return meta;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public String getUser() {
+        return user;
+    }
+
+    public String getTitleUrl() {
+        return titleUrl;
+    }
+
+    public String getNotifyUrl() {
+        return notifyUrl;
+    }
+
+    public String getComment() {
+        return comment;
+    }
+
+    public String getParsedComment() {
+        return parsedComment;
+    }
 }

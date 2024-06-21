@@ -13,6 +13,7 @@ import org.opensearch.client.RestClient;
 import org.opensearch.client.RestHighLevelClient;
 
 import java.net.URI;
+import java.util.List;
 import java.util.Properties;
 
 public class ApplicationFactory {
@@ -45,7 +46,9 @@ public class ApplicationFactory {
         properties.setProperty(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "latest");
         properties.setProperty(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, "false");
 
-        return new KafkaConsumer<>(properties);
+        KafkaConsumer<String, String> kafkaConsumer = new KafkaConsumer<>(properties);
+        kafkaConsumer.subscribe(List.of(ApplicationProperty.KAFKA_WIKIMEDIA_RECENTCHANGE_TOPIC));
+        return kafkaConsumer;
     }
 
 }

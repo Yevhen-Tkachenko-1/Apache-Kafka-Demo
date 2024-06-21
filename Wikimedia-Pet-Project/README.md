@@ -7,7 +7,7 @@ for Project implementation.
    as an Event Source for Kafka.
    There is [implementation](https://github.com/Yevhen-Tkachenko-1/Apache-Kafka-Demo/commit/a250c65850f8c1aa65a9cdb7bdab1811fbc9f0b0)
    of reading Events from Wikimedia by HTTP. 
-   For now, we run [java app](Recentchange-Producer-Microservice/src/main/java/yevhent/project/wikimedia/producer/WikimediaProducerMicroservice.java)
+   For now, we run [java app](Recentchange-Producer-Microservice/src/main/java/yevhent/project/wikimedia/RecentchangeProducerMicroservice.java)
    for 10 seconds which just prints incoming messages to Log output.
    
    At this point project state and output looks like this:
@@ -27,7 +27,7 @@ for Project implementation.
 
    There is current [implementation](https://github.com/Yevhen-Tkachenko-1/Apache-Kafka-Demo/commit/3b0ee6dabebb2a9819874c379e08e2317ff8bf18)
 
-   For now, we run [java app](Recentchange-Producer-Microservice/src/main/java/yevhent/project/wikimedia/producer/WikimediaProducerMicroservice.java)
+   For now, we run [java app](Recentchange-Producer-Microservice/src/main/java/yevhent/project/wikimedia/RecentchangeProducerMicroservice.java)
    for 10 seconds which reads Events from Wikimedia by HTTP and produces parsed data to Kafka topic.
 
    At this point project state and output looks like this:
@@ -82,7 +82,25 @@ for Project implementation.
 
    ![](picture/6.PNG)
 
-6. 
+6. We are ready to bring things together. 
+
+   First, run this [microservice](Recentchange-Consumer-Microservice/src/main/java/yevhent/project/wikimedia/RecentchangeConsumerMicroservice.java)
+   which will be waiting for Events to consume from Kafka and send to OpenSearch.
+
+   Then, run this [microservice](Recentchange-Producer-Microservice/src/main/java/yevhent/project/wikimedia/RecentchangeProducerMicroservice.java)
+   which pulls Events from Wikimedia site and send them to Kafka.
+
+   We've already observed Recentchange producing. 
+   So, now let's see consuming, output looks like this:
+
+   ![](picture/7.PNG)
+
+7. Let's check if we have it in OpenSearch using dashboard:
+
+   ![](picture/8.PNG)
+   
+   There is `rXZZO5AB1N-pmqDzXS1_` as id given from console output for the last record.
+
 
 
 
