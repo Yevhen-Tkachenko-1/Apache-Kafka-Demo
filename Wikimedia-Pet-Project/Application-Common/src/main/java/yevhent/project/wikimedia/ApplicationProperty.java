@@ -10,5 +10,6 @@ public class ApplicationProperty {
     public static final String KAFKA_WIKIMEDIA_RECENTCHANGE_TOPIC = "wikimedia.recentchange";
     public static final String KAFKA_CONSUMER_GROUP = "wikimedia.recentchange.consumer";
 
+    public static final String OPENSEARCH_WIKIMEDIA_RECENTCHANGE_INDEX = "wikimedia.recentchange";
 
 }

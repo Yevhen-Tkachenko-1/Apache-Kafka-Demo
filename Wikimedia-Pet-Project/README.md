@@ -74,6 +74,17 @@ for Project implementation.
    Finally, delete index:
    ![](picture/5.5.PNG)
 
-   
+5. Let's try to programmatic access to Opensearch. 
+   We have to create Index to write to Opensearch.
+   Run this [class](Recentchange-Consumer-Microservice/src/main/java/yevhent/project/wikimedia/OpensearchInitializer.java)
+
+   Output looks like this:
+
+   ![](picture/6.PNG)
+
+6. 
+
+
+
      
    
