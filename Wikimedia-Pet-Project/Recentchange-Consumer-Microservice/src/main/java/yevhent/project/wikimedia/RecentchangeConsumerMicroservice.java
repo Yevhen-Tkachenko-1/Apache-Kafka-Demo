@@ -28,32 +28,38 @@ public class RecentchangeConsumerMicroservice {
 
         try (consumer; openSearchClient) {
             for (int i = 0; i < 5; i++) {
-                ConsumerRecords<String, String> records = consumer.poll(Duration.ofMinutes(1));
-
-                int j = 0;
-                for (ConsumerRecord<String, String> record : records) {
-                    LOGGER.info("Pulled record[{}][{}]: topic = {}, partition = {}, offset = {}, timestamp = {}, key = {}, value = {}",
-                            i, j++, record.topic(), record.partition(), record.offset(), record.timestamp(), record.key(), record.value());
-
-                    String id = WikimediaRecentchange.extractMetaId(record.value());
-                    LOGGER.info("Idempotent id = {}", id);
-                    IndexResponse response = openSearchClient.index(
-                            new IndexRequest(ApplicationProperty.OPENSEARCH_WIKIMEDIA_RECENTCHANGE_INDEX)
-                                    .source(record.value(), XContentType.JSON)
-                                    .id(id),
-                            RequestOptions.DEFAULT);
-                    LOGGER.info("Sent to OpenSearch: index = {}, _doc = {}, result = {}", response.getIndex(), response.getId(), response.getResult());
-                }
-                Thread.sleep(3000);
+                processRecords(i, consumer, openSearchClient);
             }
-        } catch (IOException | InterruptedException e) {
+        } catch (IOException e) {
             LOGGER.error(e.getMessage());
             throw new RuntimeException(e);
         } finally {
             LOGGER.info("Goodbye world!");
         }
+    }
 
+    private static void processRecords(int i, KafkaConsumer<String, String> consumer, RestHighLevelClient openSearchClient) {
 
+        ConsumerRecords<String, String> records = consumer.poll(Duration.ofMinutes(1));
+
+        int j = 0;
+        for (ConsumerRecord<String, String> record : records) {
+            LOGGER.info("Pulled record[{}][{}]: topic = {}, partition = {}, offset = {}, timestamp = {}, key = {}, value = {}",
+                    i, j++, record.topic(), record.partition(), record.offset(), record.timestamp(), record.key(), record.value());
+
+            String id = WikimediaRecentchange.extractMetaId(record.value());
+            LOGGER.info("Idempotent id = {}", id);
+            try {
+                IndexResponse response = openSearchClient.index(
+                        new IndexRequest(ApplicationProperty.OPENSEARCH_WIKIMEDIA_RECENTCHANGE_INDEX)
+                                .source(record.value(), XContentType.JSON)
+                                .id(id),
+                        RequestOptions.DEFAULT);
+                LOGGER.info("Sent to OpenSearch: index = {}, _doc = {}, result = {}", response.getIndex(), response.getId(), response.getResult());
+            } catch (IOException e) {
+                LOGGER.error(e.getMessage());
+            }
+        }
     }
 
 }
