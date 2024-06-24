@@ -101,7 +101,54 @@ for Project implementation.
    
    There is `rXZZO5AB1N-pmqDzXS1_` as id given from console output for the last record.
 
+#### Data consistency improvement: Idempotency
 
+So far we send event to OpenSearch just as content which may lead to data duplication.
+In case we have issues with Kafka offsets, nothing prevents us to write the same Event twice to OpenSearch.
+We can deal with it by sending id along with Event content.
+
+In code, implementation looks like this:
+
+![](picture/9.PNG)
+
+Now, in console we have such output:
+
+![](picture/10.PNG)
+
+As we can see (for example for the latest Event) , _`doc` is `af8fcad2-874d-4cc6-b1c6-a0971db300cf` 
+which comes from `WikimediaRecentchange` data, extracted from `meta` content, `id` field.
+Unlike generated `id` by OpenSearch, this `id` is from Event itself, so also unique for our business case.
+Now, when we try to send the same Event to OpenSearch, it's updated which is correct behaviour.
+
+#### Custom commit management
+
+As for production system, we're not going to rely on default offset commitment.
+So, for our Consumer we have next settings:
+- `enable.auto.commit = false`
+- `auto.offset.reset = latest`
+
+This means no offset commit happens when we pool events or closing Consuming. 
+With such behaviour our Consumer when start running will have:
+- no offset saved
+- reset offset to latest
+- reading new Event (on the fly) only
+
+This makes some sense, but also may lead to data loss.
+To avoid automatic offset reset, we have to add commitment in our code:
+
+![](picture/11.PNG)
+
+Now, we have improved flow between services.
+
+First we can run Producer [microservice](Recentchange-Producer-Microservice/src/main/java/yevhent/project/wikimedia/RecentchangeProducerMicroservice.java),
+and wait for him to finish:
+
+![](picture/12.PNG)
+
+Then we are good to run Consumer [microservice](Recentchange-Consumer-Microservice/src/main/java/yevhent/project/wikimedia/RecentchangeConsumerMicroservice.java)
+which have previously saved offset, so detects new Events:
+
+![](picture/13.PNG)
 
 
      

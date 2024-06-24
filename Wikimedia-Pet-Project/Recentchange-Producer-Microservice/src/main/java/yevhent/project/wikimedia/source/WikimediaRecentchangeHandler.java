@@ -33,9 +33,8 @@ public class WikimediaRecentchangeHandler implements BackgroundEventHandler {
     @Override
     public void onMessage(String s, MessageEvent messageEvent) {
         WikimediaRecentchange wikimediaRecentchange = new WikimediaRecentchange(messageEvent.getData());
-        LOGGER.info("Handling message[{}]: data = {}", counter, wikimediaRecentchange);
+        LOGGER.info("Handling message[{}]: data = {}", counter++, wikimediaRecentchange);
         eventConsumer.accept(wikimediaRecentchange);
-        counter++;
     }
 
     @Override

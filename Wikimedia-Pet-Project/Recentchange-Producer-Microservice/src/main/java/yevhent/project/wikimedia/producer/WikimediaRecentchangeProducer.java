@@ -15,6 +15,9 @@ import java.util.function.Consumer;
 public class WikimediaRecentchangeProducer implements Consumer<WikimediaRecentchange>, Closeable {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(WikimediaRecentchangeProducer.class);
+
+    private static int counter = 0;
+
     private final KafkaProducer<String, String> kafkaProducer;
 
     public WikimediaRecentchangeProducer() {
@@ -31,8 +34,8 @@ public class WikimediaRecentchangeProducer implements Consumer<WikimediaRecentch
         kafkaProducer.send(new ProducerRecord<>(ApplicationProperty.KAFKA_WIKIMEDIA_RECENTCHANGE_TOPIC, message.getTitle(), message.toJson()),
                 (metadata, exception) -> {
                     if (exception == null) {
-                        LOGGER.info("Message produced: topic = {}, partition = {}, offset = {}, timestamp = {}, message = {}",
-                                metadata.topic(), metadata.partition(), metadata.offset(), metadata.timestamp(), message);
+                        LOGGER.info("Message produced[{}]: topic = {}, partition = {}, offset = {}, timestamp = {}, message = {}",
+                                counter++, metadata.topic(), metadata.partition(), metadata.offset(), metadata.timestamp(), message);
                     } else {
                         LOGGER.error("Error while message producing: {}", message);
                     }

@@ -14,6 +14,7 @@ import yevhent.project.wikimedia.model.WikimediaRecentchange;
 
 import java.io.IOException;
 import java.time.Duration;
+import java.util.concurrent.TimeUnit;
 
 public class RecentchangeConsumerMicroservice {
 
@@ -29,11 +30,12 @@ public class RecentchangeConsumerMicroservice {
         try (consumer; openSearchClient) {
             for (int i = 0; i < 5; i++) {
                 processRecords(i, consumer, openSearchClient);
+                TimeUnit.SECONDS.sleep(5);
             }
-        } catch (IOException e) {
+        } catch (IOException | InterruptedException e) {
             LOGGER.error(e.getMessage());
-            throw new RuntimeException(e);
         } finally {
+
             LOGGER.info("Goodbye world!");
         }
     }
@@ -60,6 +62,21 @@ public class RecentchangeConsumerMicroservice {
                 LOGGER.error(e.getMessage());
             }
         }
+        consumer.commitSync();
     }
 
+
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
