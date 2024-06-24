@@ -10,6 +10,7 @@ import org.opensearch.client.RestHighLevelClient;
 import org.opensearch.common.xcontent.XContentType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import yevhent.project.wikimedia.model.WikimediaRecentchange;
 
 import java.io.IOException;
 import java.time.Duration;
@@ -33,8 +34,13 @@ public class RecentchangeConsumerMicroservice {
                 for (ConsumerRecord<String, String> record : records) {
                     LOGGER.info("Pulled record[{}][{}]: topic = {}, partition = {}, offset = {}, timestamp = {}, key = {}, value = {}",
                             i, j++, record.topic(), record.partition(), record.offset(), record.timestamp(), record.key(), record.value());
+
+                    String id = WikimediaRecentchange.extractMetaId(record.value());
+                    LOGGER.info("Idempotent id = {}", id);
                     IndexResponse response = openSearchClient.index(
-                            new IndexRequest(ApplicationProperty.OPENSEARCH_WIKIMEDIA_RECENTCHANGE_INDEX).source(record.value(), XContentType.JSON),
+                            new IndexRequest(ApplicationProperty.OPENSEARCH_WIKIMEDIA_RECENTCHANGE_INDEX)
+                                    .source(record.value(), XContentType.JSON)
+                                    .id(id),
                             RequestOptions.DEFAULT);
                     LOGGER.info("Sent to OpenSearch: index = {}, _doc = {}, result = {}", response.getIndex(), response.getId(), response.getResult());
                 }

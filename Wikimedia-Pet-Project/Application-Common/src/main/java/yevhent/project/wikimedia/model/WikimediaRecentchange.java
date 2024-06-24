@@ -37,7 +37,7 @@ public class WikimediaRecentchange {
         this.oldRevision = jsonObject.optJSONObject("revision", new JSONObject("{}")).optLong("old");
         this.newLength = jsonObject.optJSONObject("length", new JSONObject("{}")).optInt("new");
         this.oldLength = jsonObject.optJSONObject("length", new JSONObject("{}")).optInt("old");
-        this.meta = jsonObject.optJSONObject("meta", new JSONObject("{}")).toString();
+        this.meta = jsonObject.optString("meta", "{}");
         this.type = jsonObject.optString("type");
         this.user = jsonObject.optString("user");
         this.title = jsonObject.optString("title");
@@ -73,8 +73,13 @@ public class WikimediaRecentchange {
                 '}';
     }
 
-    public String toJson(){
+    public String toJson() {
         return new JSONObject(this).toString();
+    }
+
+    public static String extractMetaId(String data) {
+        String meta = new WikimediaRecentchange(data).getMeta();
+        return new JSONObject(meta).optString("id", "");
     }
 
     public long getId() {
