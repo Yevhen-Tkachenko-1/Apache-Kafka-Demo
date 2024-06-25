@@ -188,7 +188,7 @@ Then in Streams output we start observing next counting:
 
 ![](picture/16.PNG)
 
-We can double-check if Topic for statistics was automatically created and populating using CLI.
+We can double-check if Topic for statistics was automatically created and populated using CLI commands.
 
 First check all Topics by following:
 
