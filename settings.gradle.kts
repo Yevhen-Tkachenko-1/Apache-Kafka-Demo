@@ -6,3 +6,5 @@ include("Wikimedia-Pet-Project:Recentchange-Producer-Microservice")
 findProject(":Wikimedia-Pet-Project:Recentchange-Producer-Microservice")?.name = "Recentchange-Producer-Microservice"
 include("Wikimedia-Pet-Project:Application-Common")
 findProject(":Wikimedia-Pet-Project:Application-Common")?.name = "Application-Common"
+include("Wikimedia-Pet-Project:Recentchange-Statistics-Streams")
+findProject(":Wikimedia-Pet-Project:Recentchange-Statistics-Streams")?.name = "Recentchange-Statistics-Streams"
