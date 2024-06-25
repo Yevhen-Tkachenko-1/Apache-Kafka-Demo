@@ -2,7 +2,7 @@ plugins {
     id("java")
 }
 
-group = "yevhent.demo.kafka"
+group = "yevhent.project.wikimedia"
 version = "1.0-SNAPSHOT"
 
 repositories {
@@ -22,6 +22,7 @@ dependencies {
     // https://mvnrepository.com/artifact/com.launchdarkly/okhttp-eventsource
     implementation("com.launchdarkly:okhttp-eventsource:4.1.1")
 
+    implementation(project(":Wikimedia-Pet-Project:Application-Common"))
 }
 
 tasks.test {
