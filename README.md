@@ -85,7 +85,7 @@ Follow this [link](Wikimedia-Pet-Project/README.md) to check README file of this
 
 ## Module 3: More Kafka use cases
 
-#### Movie Analytics app
+#### 1. Movie Analytics app
 
 **Problem:** There is company that has TV Shows and Movies streaming platform like Netflix.
 They would like to have new feature: analytics app that will improve User experience.
@@ -93,7 +93,14 @@ Requirements are next:
 - Users should be able to resume the video where they left if off
 - Recommend the next show to the User
 
-**Solution:** We can have components as following:
+**Solution:** 
+implement data processing based on Kafka Cluster, Java Microservices (Producers and Consumers), Kafka Streams, Kafka Connect.
+
+The entire project will look like this:
+
+![](picture/1.png)
+
+Where components are:
 - `VideoPlayer` - app that company already has
 - `tracking.watching.position.avro` - new Kafka Topic to process Events of watching position change.
    May have `user_id` as Event key.
@@ -112,8 +119,6 @@ Requirements are next:
 - `VideoAnalyticsWriter` - new Microservice that plays role of Kafka Connect:
    consumes Events from `tracking.watching.position.avro`, `tracking.watching.recommendation.avro` and saves them to `VideoAnalyticsStore`
 
-The entire project will look like this:
 
-![](picture/1.png)
 
 
