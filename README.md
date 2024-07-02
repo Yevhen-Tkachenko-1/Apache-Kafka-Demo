@@ -101,22 +101,22 @@ The entire project will look like this:
 ![](picture/1.png)
 
 Where components are:
-- `VideoPlayer` - app that company already has
+- `VideoPlayer` - existing app that the company already has in production.
 - `tracking.watching.position.avro` - new Kafka Topic to process Events of watching position change.
    May have `user_id` as Event key.
-- `VideoPositionTracker` - new Microservice that plays role of Kafka Producer: 
+- `VideoPositionTracker` - new Java Microservice that plays role of Kafka Producer: 
    when User is watching Video, `VideoPositionTrasker` receives Events of watching position change from `VideoPlayer` service and writes it to `tracking.watching.position.avro`
-- `VideoResumer` - new Microservice that plays role of Kafka Consumer: 
+- `VideoResumer` - new Java Microservice that plays role of Kafka Consumer: 
    when User resumes Video, `VideoResumer` returns current watching position from `tracking.watching.position.avro` to `VideoPlayer` service
 - `tracking.watching.recommendation.avro` - new Kafka Topic to process Events of watching recommendation change.
    May have `user_id` as Event key.
-- `VideoRecommendationEngine` - new Microservice that plays role of Kafka Streams:
+- `VideoRecommendationEngine` - new Java Microservice that uses Kafka Streams API:
    based on Events in `tracking.watching.position.avro` writes Events to `tracking.watching.recommendation.avro`.
-   Assumed following business idea: the more User watched Video (e.g. just first 5 mins or full 2 hours?) the more similar Videos will be recommended.  
-- `VideoRecommender` - new Microservice that plays role of Kafka Consumer:
+   Assumed following business idea: the more amount of time Video was watched (e.g. just first 5 mins or full 2 hours?) the more similar Videos will be recommended.  
+- `VideoRecommender` - new Java Microservice that plays role of Kafka Consumer:
    when User opens Movie portal, `VideoRecommender` returns list of recommended videos from `tracking.watching.recommendation.avro` to `VideoPlayer` service
-- `VideoAnalyticsStore` - new Hadoop service to store Events from `tracking.watching.position.avro` and `tracking.watching.recommendation.avro`
-- `VideoAnalyticsWriter` - new Microservice that plays role of Kafka Connect:
+- `VideoAnalyticsStore` - new Database service to store Events from `tracking.watching.position.avro` and `tracking.watching.recommendation.avro`
+- `VideoAnalyticsWriter` - new Microservice that plays role of Kafka Connect (Sink Connector):
    consumes Events from `tracking.watching.position.avro`, `tracking.watching.recommendation.avro` and saves them to `VideoAnalyticsStore`
 
 
