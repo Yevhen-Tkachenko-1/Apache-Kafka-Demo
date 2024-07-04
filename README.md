@@ -12,6 +12,7 @@ with related GitHub repository: [conduktor/kafka-beginners-course](https://githu
 * [Start Kafka](#start-kafka)
 * [Module 1: Basics](#module-1-basics)
 * [Module 2: Pet Project](#module-2-pet-project)
+* [Module 3: Use Cases](#module-3-use-cases)
 
 ## Tech Stack
 
@@ -85,8 +86,8 @@ Follow this [link](Wikimedia-Pet-Project/README.md) to check README file of this
 
 ## Module 3: Use Cases
 
-Overview of Kafka application in real world projects. 
-We consider cases with high data load meaning app has a lot of End Users
+Overview of Kafka applications in real world projects. 
+We consider cases where important point is high data load meaning app has a lot of End Users
 that actively produce and consume data in real time.  
 
 #### 1. Movie Analytics app
