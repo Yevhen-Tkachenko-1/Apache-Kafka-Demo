@@ -83,7 +83,11 @@ There is use case where we play with Kafka in real project scenario.
 
 Follow this [link](Wikimedia-Pet-Project/README.md) to check README file of this module.
 
-## Module 3: More Kafka use cases
+## Module 3: Use Cases
+
+Overview of Kafka application in real world projects. 
+We consider cases with high data load meaning app has a lot of End Users
+that actively produce and consume data in real time.  
 
 #### 1. Movie Analytics app
 
@@ -92,9 +96,10 @@ They would like to have new feature: analytics app that will improve User experi
 Requirements are next:
 - Users should be able to resume the video where they left if off
 - Recommend the next show to the User
+- Store history of watching and recommendations
 
 **Solution:** 
-implement data processing based on Kafka Cluster, Java Microservices (Producers and Consumers), Kafka Streams, Kafka Connect.
+implement data processing based on Kafka Cluster, Java Microservices (Kafka Producers, Consumers, Streams), Kafka Connect (Sink Connector).
 
 The entire project will look like this:
 
@@ -102,8 +107,8 @@ The entire project will look like this:
 
 Where components are:
 - `VideoPlayer` - existing app that the company already has in production.
-- `tracking.watching.position.avro` - new Kafka Topic to process Events of watching position change.
-   May have `user_id` as Event key.
+- `tracking.watching.position.avro` - new Kafka Topic with Events of watching position change.
+   May have `user_id` as Event key, `
 - `VideoPositionTracker` - new Java Microservice that plays role of Kafka Producer: 
    when User is watching Video, `VideoPositionTrasker` receives Events of watching position change from `VideoPlayer` service and writes it to `tracking.watching.position.avro`
 - `VideoResumer` - new Java Microservice that plays role of Kafka Consumer: 
@@ -119,6 +124,71 @@ Where components are:
 - `VideoAnalyticsWriter` - new Microservice that plays role of Kafka Connect (Sink Connector):
    consumes Events from `tracking.watching.position.avro`, `tracking.watching.recommendation.avro` and saves them to `VideoAnalyticsStore`
 
+#### 2. Get Taxi app
 
+**Problem:** There is a startup company that has a growing demand for Taxi services in their country, 
+so, they are going to implement Get Taxi app like Uber. 
+
+Currently, the company develops Mobile applications for Taxi User and Taxi Driver.
+We are invited as Back-End professionals and our goal is to develop solution with "before drive" functionality:
+
+- When Taxi User chooses Drive Road, calculate Drive Price 
+  based on average Taxi Driver Rate (in near location) and Road Traffic. 
+
+- When Taxi User agrees with the Drive Price and submits Drive Order, 
+  find the best match with Taxi Driver based on Taxi Driver Location.
+
+- When Taxi Driver becomes free and submits readiness for the next Drive Order, 
+  suggest the best match with Taxi User based on Taxi User Location and Drive Price.
+
+- When Taxi User is waiting for the Taxi Driver to be found, 
+  suggest Taxi User to increase Drive Price by amount calculated based on time spent on waiting.
+
+- When Taxi Driver commits for a Drive Order, 
+  then we assume that goal is archived successfully: our app has found match between User and Driver,
+  so, Drive has started, and we have to save it to DB.
+
+We should consider that Mobile applications have next API:
+
+- When Taxi User submits Drive Road,
+  then Taxi User mobile app sends asynchronous HTTP POST request to check Drive Price.
+  The content in this POST request is Drive Road which contains User ID, Start Location, Finish Location.
+  Drive Road may be frequently changed data:
+  Taxi User may play with different Roads to find the best Price or just change plans. 
+
+- While server is processing Drive Price,
+  Taxi User mobile app has background process
+  that makes regular HTTP GET requests to receive the latest Drive Price.
+  That means Taxi User can wait for comfortable Drive Price.
+
+- When Taxi User got some Drive Price and commits it,
+  then Taxi User mobile app sends asynchronous HTTP POST request to make Drive Order.
+  Drive Order is content of this POST request and contains User ID, Start Location, Finish Location, Price.
+  
+- While Taxi User is waiting for Drive Order to be picked by Taxi Driver, 
+  Taxi User mobile app has background process 
+  that makes regular asynchronous HTTP POST requests to receive suggestions about Price increasing.
+  Content of this POST request is User ID and amount of waiting time. 
+  If Taxi User agrees to increase Price,
+  Taxi User mobile app cancels previous Drive Order POST request and make new one (as described above)
+
+- When Taxi Drive becomes ready for new Drive Order,
+  Taxi Drive mobile app sends asynchronous HTTP POST request to submit availability.
+
+- While server is searching Drive Order for Taxi Driver,
+  Taxi Driver mobile app has background process
+  that makes regular HTTP GET requests to receive the better Drive Order.
+  That means Taxi Driver can wait for comfortable Drive Order.
+
+- When Taxi Driver got some Drive Recommendation and commits it,
+  then Taxi Driver mobile app sends synchronous HTTP POST request to make Drive Match.
+  Drive Match is content of this POST request and contains Driver ID, User ID, Start Location, Finish Location, Price.
+
+**Solution:**
+Implement data processing based on Kafka Cluster, Java Microservices (Producers and Consumers), Kafka Streams, Kafka Connect.
+
+The entire project will look like this:
+
+![](picture/2.png)
 
 
